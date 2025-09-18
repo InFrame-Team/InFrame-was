@@ -1,0 +1,12 @@
+package com.InFrame.common.exception;
+
+import com.InFrame.common.exception.error.ErrorCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class CustomException extends RuntimeException {
+
+    private final ErrorCode errorCode;
+}
