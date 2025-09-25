@@ -16,5 +16,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-  jwt:
-    secret-key: ${SECRET_KEY}
+jwt:
+  secret:
+    key: ${SECRET_KEY}
