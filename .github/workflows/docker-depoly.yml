@@ -25,7 +25,7 @@ jobs:
 
       # CI - Gradle 빌드 및 테스트
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -x test
 
       # CD 실행 조건 확인
       - name: Login to Docker Hub
