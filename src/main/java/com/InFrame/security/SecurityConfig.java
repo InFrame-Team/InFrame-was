@@ -24,6 +24,12 @@ public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final CorsConfigurationSource corsConfigurationSource;
 
+    private static final String[] SWAGGER_URL = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-resources/**"
+    };
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -39,6 +45,8 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
+                        .requestMatchers(SWAGGER_URL).permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/user/**").permitAll()
                         .anyRequest().authenticated()
         );
