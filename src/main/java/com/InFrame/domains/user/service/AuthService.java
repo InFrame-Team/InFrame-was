@@ -4,7 +4,8 @@ import com.InFrame.common.exception.CustomException;
 import com.InFrame.common.exception.error.ErrorCode;
 import com.InFrame.domains.user.entity.User;
 import com.InFrame.domains.user.repository.UserRepository;
-import com.InFrame.domains.user.reqdto.SignupRequestDto;
+import com.InFrame.domains.user.reqdto.SignInRequestDto;
+import com.InFrame.domains.user.reqdto.SignUpRequestDto;
 import com.InFrame.domains.user.resdto.AuthResponseDto;
 import com.InFrame.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    // 회원가입
     @Transactional
-    public AuthResponseDto signup(SignupRequestDto signupRequestDto) { // 회원가입
+    public AuthResponseDto signup(SignUpRequestDto signupRequestDto) {
         if (userRepository.findByEmail(signupRequestDto.email()).isPresent()) {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXIST);
         }
@@ -37,5 +39,24 @@ public class AuthService {
                     savedUser.getRole().name()
         );
         return AuthResponseDto.from(savedUser, accessToken);
+    }
+
+    // 로그인
+    @Transactional
+    public AuthResponseDto signin(SignInRequestDto signInRequestDto) {
+        User user = userRepository.findByEmail(signInRequestDto.email())
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(signInRequestDto.password(), user.getPassword())) {
+            throw new CustomException(ErrorCode.INCORRECT_PASSWORD);
+        }
+
+        String accessToken = jwtUtil.createAccessToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole().name()
+        );
+
+        return AuthResponseDto.from(user, accessToken);
     }
 }

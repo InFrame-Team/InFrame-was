@@ -4,7 +4,7 @@ package com.InFrame.domains.user.reqdto;
 import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.entity.User;
 
-public record SignupRequestDto(
+public record SignUpRequestDto(
         String email,
         String password,
         String nickname,
