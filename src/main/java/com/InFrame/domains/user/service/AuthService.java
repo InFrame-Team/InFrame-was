@@ -26,7 +26,7 @@ public class AuthService {
         if (userRepository.findByEmail(signupRequestDto.email()).isPresent()) {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXIST);
         }
-        if (userRepository.findByEmail(signupRequestDto.nickname()).isPresent()) {
+        if (userRepository.findByNickname(signupRequestDto.nickname()).isPresent()) {
             throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
         String encodedPassword = passwordEncoder.encode(signupRequestDto.password());
