@@ -2,6 +2,8 @@ package com.InFrame.security;
 
 import com.InFrame.security.jwt.JwtAuthFilter;
 import com.InFrame.security.jwt.JwtUtil;
+import com.InFrame.security.oauth2.CustomOAuth2UserService;
+import com.InFrame.security.oauth2.OAuth2LoginSuccessHandler;
 import com.InFrame.security.userdetails.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +25,8 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     private static final String[] SWAGGER_URL = {
             "/v3/api-docs/**",
@@ -39,17 +43,23 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource));
         http.csrf(AbstractHttpConfigurer::disable);
-        http.sessionManagement((sessionManagement) ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
+        http.formLogin(AbstractHttpConfigurer::disable);
+        http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(SWAGGER_URL).permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/oauth2/**",
+                                "/login/oauth2/**").permitAll()
                         .requestMatchers("/api/v1/user/**").permitAll()
                         .anyRequest().authenticated()
         );
+
+        http.oauth2Login(oauth -> oauth
+                .userInfoEndpoint(u -> u.userService(customOAuth2UserService))
+                .successHandler(oAuth2LoginSuccessHandler)
+        );
+
         http.addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsServiceImpl), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
