@@ -35,13 +35,21 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column
+    private String provider;
+
+    @Column
+    private String providerId;
+
     @Builder
     public User(String email, String password, String nickname,
-                String name, Role role) {
+                String name, Role role, String provider, String providerId) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.name = name;
         this.role = role;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 }
