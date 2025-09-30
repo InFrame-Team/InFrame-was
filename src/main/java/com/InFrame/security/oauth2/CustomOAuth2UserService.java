@@ -27,7 +27,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String providerId = null;
         String email = null;
-        String nickname = null;
         String name = null;
 
         if (provider.equals("kakao")) {
@@ -49,13 +48,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<User> optionalUser = userRepository.findByProviderAndProviderId(provider, providerId);
         User user;
 
+        String nickname = provider + "_" + providerId.substring(0, 6);
+
+        while (userRepository.findByNickname(nickname).isPresent()) {
+            nickname += (int)(Math.random() * 10);
+        }
+
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
         } else {
             user = User.builder()
                     .email(email)
                     .password("")
-                    .nickname("")
+                    .nickname(nickname)
                     .name(name)
                     .role(Role.USER)
                     .provider(provider)
