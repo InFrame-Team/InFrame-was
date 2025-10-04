@@ -59,4 +59,18 @@ public class AuthService {
 
         return AuthResponseDto.from(user, accessToken);
     }
+
+    // 이메일 중복 확인
+    public void checkEmailDuplication(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXIST);
+        }
+    }
+
+    // 닉네임 중복 확인
+    public void checkNicknameDuplication(String nickname) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXIST);
+        }
+    }
 }
