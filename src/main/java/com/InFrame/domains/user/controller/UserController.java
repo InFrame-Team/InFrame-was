@@ -1,5 +1,6 @@
 package com.InFrame.domains.user.controller;
 
+import com.InFrame.domains.user.controller.api.UserApi;
 import com.InFrame.domains.user.resdto.UserInfoResponseDto;
 import com.InFrame.domains.user.service.UserService;
 import com.InFrame.security.userdetails.UserDetailsImpl;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
-public class UserController {
+public class UserController implements UserApi {
     private final UserService userService;
 
     @GetMapping("/me")
