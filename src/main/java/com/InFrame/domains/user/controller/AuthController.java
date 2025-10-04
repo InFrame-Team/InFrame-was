@@ -1,5 +1,6 @@
 package com.InFrame.domains.user.controller;
 
+import com.InFrame.domains.user.controller.api.AuthApi;
 import com.InFrame.domains.user.reqdto.SignInRequestDto;
 import com.InFrame.domains.user.reqdto.SignUpRequestDto;
 import com.InFrame.domains.user.resdto.AuthResponseDto;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -20,7 +22,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
-public class AuthController {
+public class AuthController implements AuthApi {
     private final AuthService authService;
 
     @PostMapping("/sign-up")
@@ -41,5 +43,22 @@ public class AuthController {
     public void socialLogin(@PathVariable String provider, HttpServletResponse response) throws IOException {
         String redirectUrl = "/oauth2/authorization/" + provider;
         response.sendRedirect(redirectUrl);
+    }
+
+    @PostMapping("/sign-out")
+    public ResponseEntity<?> signOut() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<?> checkEmail(@RequestParam String email) {
+        authService.checkEmailDuplication(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/check-nickname")
+    public ResponseEntity<?> checkNickname(@RequestParam String nickname) {
+        authService.checkNicknameDuplication(nickname);
+        return ResponseEntity.ok().build();
     }
 }
