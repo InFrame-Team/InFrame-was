@@ -6,6 +6,7 @@ import com.InFrame.domains.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Schema(description = "회원가입 요청 DTO")
@@ -29,7 +30,7 @@ public record SignUpRequestDto(
         String name,
 
         @Schema(description = "역할", example = "USER")
-        @NotBlank(message = "역할 지정은 필수 사항입니다.")
+        @NotNull(message = "역할 지정은 필수 사항입니다.")
         Role role
 ) {
     public User toEntity(String encodedPassword) {
