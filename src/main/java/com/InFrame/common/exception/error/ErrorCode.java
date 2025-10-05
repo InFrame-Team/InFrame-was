@@ -16,7 +16,11 @@ public enum ErrorCode {
     // 회원가입, 로그인 오류
     EMAIL_ALREADY_EXIST(409, "해당 이메일은 이미 존재합니다."),
     NICKNAME_ALREADY_EXIST(409, "해당 닉네임은 이미 존재합니다."),
-    INCORRECT_PASSWORD(400, "비밀번호가 일치하지 않습니다.");
+    INCORRECT_PASSWORD(400, "비밀번호가 일치하지 않습니다."),
+
+    // 호스트 변경 관련 오류
+    USER_ALREADY_HOST(409, "이미 호스트로 등록된 유저입니다."),
+    BUSINESS_NUMBER_ALREADY_EXISTS(409, "이미 등록된 사업자 번호입니다.");
 
     private final int status;
     private final String message;
