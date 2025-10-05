@@ -6,6 +6,7 @@ import com.InFrame.domains.user.reqdto.SignUpRequestDto;
 import com.InFrame.domains.user.resdto.AuthResponseDto;
 import com.InFrame.domains.user.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +27,14 @@ public class AuthController implements AuthApi {
     private final AuthService authService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody SignUpRequestDto signupRequestDto) {
+    public ResponseEntity<?> signUp(@RequestBody @Valid  SignUpRequestDto signupRequestDto) {
         AuthResponseDto authResponseDto = authService.signup(signupRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponseDto);
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody SignInRequestDto signInRequestDto) {
+    public ResponseEntity<?> signIn(@RequestBody @Valid SignInRequestDto signInRequestDto) {
         AuthResponseDto authResponseDto = authService.signin(signInRequestDto);
 
         return ResponseEntity.ok(authResponseDto);
