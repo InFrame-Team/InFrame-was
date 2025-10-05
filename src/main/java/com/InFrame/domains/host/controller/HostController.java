@@ -1,5 +1,6 @@
 package com.InFrame.domains.host.controller;
 
+import com.InFrame.domains.host.controller.api.HostApi;
 import com.InFrame.domains.host.reqdto.HostRequestDto;
 import com.InFrame.domains.host.service.HostService;
 import com.InFrame.security.userdetails.UserDetailsImpl;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/host")
-public class HostController {
+public class HostController implements HostApi {
     private final HostService hostService;
 
     @PostMapping("/update")
