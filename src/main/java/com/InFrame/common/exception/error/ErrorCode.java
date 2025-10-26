@@ -12,6 +12,7 @@ public enum ErrorCode {
 
     // 유저 관련 오류
     USER_NOT_FOUND(404, "해당 유저를 찾을 수 없습니다."),
+    USER_NOT_HOST(403, "해당 유저는 호스트가 아닙니다."),
 
     // 회원가입, 로그인 오류
     EMAIL_ALREADY_EXIST(409, "해당 이메일은 이미 존재합니다."),
