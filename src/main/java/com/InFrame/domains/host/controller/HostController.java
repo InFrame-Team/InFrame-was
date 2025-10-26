@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HostController implements HostApi {
     private final HostService hostService;
 
+    @Override
     @PostMapping("/update")
     public ResponseEntity<?> changeToHost(
             @AuthenticationPrincipal UserDetailsImpl userDetails,

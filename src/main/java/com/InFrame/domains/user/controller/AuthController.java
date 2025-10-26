@@ -26,6 +26,7 @@ import java.io.IOException;
 public class AuthController implements AuthApi {
     private final AuthService authService;
 
+    @Override
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody @Valid  SignUpRequestDto signupRequestDto) {
         AuthResponseDto authResponseDto = authService.signup(signupRequestDto);
@@ -33,6 +34,7 @@ public class AuthController implements AuthApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponseDto);
     }
 
+    @Override
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody @Valid SignInRequestDto signInRequestDto) {
         AuthResponseDto authResponseDto = authService.signin(signInRequestDto);
@@ -40,23 +42,27 @@ public class AuthController implements AuthApi {
         return ResponseEntity.ok(authResponseDto);
     }
 
+    @Override
     @GetMapping("/oauth2/{provider}")
     public void socialLogin(@PathVariable String provider, HttpServletResponse response) throws IOException {
         String redirectUrl = "/oauth2/authorization/" + provider;
         response.sendRedirect(redirectUrl);
     }
 
+    @Override
     @PostMapping("/sign-out")
     public ResponseEntity<?> signOut() {
         return ResponseEntity.ok().build();
     }
 
+    @Override
     @GetMapping("/check-email")
     public ResponseEntity<?> checkEmail(@RequestParam String email) {
         authService.checkEmailDuplication(email);
         return ResponseEntity.ok().build();
     }
 
+    @Override
     @GetMapping("/check-nickname")
     public ResponseEntity<?> checkNickname(@RequestParam String nickname) {
         authService.checkNicknameDuplication(nickname);
