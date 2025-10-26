@@ -1,5 +1,6 @@
 package com.InFrame.domains.experience.controller;
 
+import com.InFrame.domains.experience.controller.api.ExperienceApi;
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
 import com.InFrame.domains.experience.service.ExperienceService;
@@ -17,10 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/host/experiences")
-public class ExperienceController {
+public class ExperienceController implements ExperienceApi {
 
     private final ExperienceService experienceService;
 
+    @Override
     @PostMapping
     public ResponseEntity<?> createExperience(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
