@@ -25,8 +25,8 @@ public interface ExperienceApi {
                                     {
                                         "experienceId": 1,
                                         "hostId": 12,
-                                        "title": "한 입의 예술, 핸드메이드 초콜릿"
-                                        "description": "저희 체험은 100년 째 이어지고 있는 머시기 ,, (생략)",
+                                        "title": "한 입의 예술, 핸드메이드 초콜릿",
+                                        "description": "저희 체험은 100년 째 이어지고 있는 머시기 ... (생략)",
                                         "price": 50000,
                                         "time" : 3
                                     }
