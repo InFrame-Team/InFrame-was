@@ -12,7 +12,8 @@ public enum ErrorCode {
 
     // 유저 관련 오류
     USER_NOT_FOUND(404, "해당 유저를 찾을 수 없습니다."),
-    USER_NOT_HOST(403, "해당 유저는 호스트가 아닙니다."),
+    FORBIDDEN_ACCESS(403, "해당 유저는 권한이 없습니다."),
+    HOST_NOT_FOUND(404, "해당 유저의 호스트 정보를 찾을 수 없습니다."),
 
     // 회원가입, 로그인 오류
     EMAIL_ALREADY_EXIST(409, "해당 이메일은 이미 존재합니다."),
@@ -22,6 +23,9 @@ public enum ErrorCode {
     // 호스트 변경 관련 오류
     USER_ALREADY_HOST(409, "이미 호스트로 등록된 유저입니다."),
     BUSINESS_NUMBER_ALREADY_EXISTS(409, "이미 등록된 사업자 번호입니다."),
+
+    // 체험 관련 오류
+    EXPERIENCE_NOT_FOUND(404, "해당 체험을 찾을 수 없습니다."),
 
     // 예약 관련 오류
     RESERVATION_SLOT_NOT_AVAILABLE(409, "이미 예약이 마감된 시간입니다."),

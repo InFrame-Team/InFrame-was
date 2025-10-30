@@ -20,10 +20,14 @@ public class ExperienceService {
     // 체험 생성
     public ExperienceResponseDto createExperience(User user, ExperienceRequestDto requestDto) {
         if (user.getRole() != Role.HOST) {
-            throw new CustomException(ErrorCode.USER_NOT_HOST);
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         Host host = user.getHost();
+
+        if (host == null) {
+            throw new CustomException(ErrorCode.HOST_NOT_FOUND);
+        }
 
         Experience experience = requestDto.toEntity(host);
 

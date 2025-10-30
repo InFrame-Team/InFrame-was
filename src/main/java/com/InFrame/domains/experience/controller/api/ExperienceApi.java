@@ -24,11 +24,21 @@ public interface ExperienceApi {
                             @ExampleObject(value = """
                                     {
                                         "experienceId": 1,
-                                        "hostId": 12,
-                                        "title": "한 입의 예술, 핸드메이드 초콜릿",
-                                        "description": "저희 체험은 100년 째 이어지고 있는 머시기 ... (생략)",
-                                        "price": 50000,
-                                        "time" : 3
+                                            "hostId": 1,
+                                            "title": "한 입의 예술, 핸드메이드 초콜릿",
+                                            "description": "저희 체험은 100년 째 이어지고 있는 머시기 ,, (생략)",
+                                            "price": 50000,
+                                            "durationInHours": 3,
+                                            "maxCapacityPerSlot": 3,
+                                            "availableDaysOfWeek": [
+                                                "SUNDAY",
+                                                "MONDAY"
+                                            ],
+                                            "availableTimes": [
+                                                "09:00:00",
+                                                "11:00:00",
+                                                "14:00:00"
+                                            ]
                                     }
                                     """)
                     })),
