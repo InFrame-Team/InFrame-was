@@ -28,11 +28,11 @@ public enum ErrorCode {
     EXPERIENCE_NOT_FOUND(404, "해당 체험을 찾을 수 없습니다."),
 
     // 예약 관련 오류
+    RESERVATION_SLOT_NOT_AVAILABLE(409, "이미 예약이 마감된 시간입니다."),
+    INVALID_PARTICIPANT_COUNT(400, "예약 인원은 1명 이상이어야 합니다."),
     RESERVATION_ON_CLOSED_DAY(400, "체험 휴무일에는 예약할 수 없습니다."),
     INVALID_RESERVATION_TIME(400, "선택한 시간은 예약 가능한 시간이 아닙니다."),
-    RESERVATION_CAPACITY_EXCEEDED(400, "최대 예약 가능 인원을 초과했습니다."),
-    RESERVATION_SLOT_NOT_AVAILABLE(400, "이미 예약된 시간대 입니다."),
-    INVALID_PARTICIPANT_COUNT(400, "예약 가능 인원은 0명 이상이여야 합니다.");
+    RESERVATION_CAPACITY_EXCEEDED(400, "최대 예약 가능 인원을 초과했습니다.");
 
     private final int status;
     private final String message;
