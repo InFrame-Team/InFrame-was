@@ -64,4 +64,9 @@ jobs:
               -e KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} \
               -e NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
               -e NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
+              -e OAUTH2_REDIRECT_URL=${{ secrets.OAUTH2_REDIRECT_URL }} \
+              -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
+              -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
+              -e AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }} \
+            
               ${{ secrets.DOCKERHUB_USERNAME }}/inframe-was:develop
