@@ -8,6 +8,7 @@ public record UserInfoResponseDto(
         String email,
         String nickname,
         String name,
+        String profileImageUrl,
         Role role
 ) {
     public static UserInfoResponseDto from(User user) {
@@ -16,6 +17,7 @@ public record UserInfoResponseDto(
                 user.getEmail(),
                 user.getNickname(),
                 user.getName(),
+                user.getProfileImageUrl(),
                 user.getRole()
         );
     }

@@ -32,7 +32,12 @@ public enum ErrorCode {
     INVALID_PARTICIPANT_COUNT(400, "예약 인원은 1명 이상이어야 합니다."),
     RESERVATION_ON_CLOSED_DAY(400, "체험 휴무일에는 예약할 수 없습니다."),
     INVALID_RESERVATION_TIME(400, "선택한 시간은 예약 가능한 시간이 아닙니다."),
-    RESERVATION_CAPACITY_EXCEEDED(400, "최대 예약 가능 인원을 초과했습니다.");
+    RESERVATION_CAPACITY_EXCEEDED(400, "최대 예약 가능 인원을 초과했습니다."),
+
+    // 이미지 관련 오류
+    FILE_IS_EMPTY(404, "파일이 비어있습니다."),
+    FILE_UPLOAD_FAILED(400, "파일 업로드에 실패하였습니다."),
+    INVALID_FILE_URL(400, "잘못된 경로입니다.");
 
     private final int status;
     private final String message;

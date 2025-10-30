@@ -5,13 +5,19 @@ import com.InFrame.domains.user.resdto.UserInfoResponseDto;
 import com.InFrame.domains.user.service.UserService;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,4 +46,14 @@ public class UserController implements UserApi {
         return ResponseEntity.ok().build();
     }
 
+    @Override
+    @PostMapping(value = "/me/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadMyProfileImage(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam("file") MultipartFile file) {
+
+        String imageUrl = userService.uploadProfileImage(userDetails.getUser(), file);
+
+        return ResponseEntity.ok(Map.of("profileImageUrl", imageUrl));
+    }
 }

@@ -62,6 +62,7 @@ public interface AuthApi {
                                         "userId" : "<userId>",
                                         "email" : "<email>",
                                         "role": "USER | HOST"
+                                        "profileImageUrl": "https://s3.../image-url.jpg"
                                     }
                                     """)
                     })),

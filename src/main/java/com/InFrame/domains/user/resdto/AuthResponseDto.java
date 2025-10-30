@@ -8,6 +8,7 @@ public record AuthResponseDto(
         String email,
         String nickname,
         String name,
+        String profileImageUrl,
         Role role,
         String accessToken
 ) {
@@ -17,6 +18,7 @@ public record AuthResponseDto(
                 user.getEmail(),
                 user.getNickname(),
                 user.getName(),
+                user.getProfileImageUrl(),
                 user.getRole(),
                 accessToken
         );

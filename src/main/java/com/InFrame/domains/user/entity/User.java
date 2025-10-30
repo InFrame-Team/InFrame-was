@@ -44,6 +44,9 @@ public class User {
     @Column
     private String providerId;
 
+    @Column
+    private String profileImageUrl;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Host host;
 
@@ -51,9 +54,14 @@ public class User {
         this.role = role;
     }
 
+    public void updateProfileImage(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
     @Builder
     public User(String email, String password, String nickname,
-                String name, Role role, String provider, String providerId) {
+                String name, Role role, String provider, String providerId,
+                String profileImageUrl) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -61,5 +69,6 @@ public class User {
         this.role = role;
         this.provider = provider;
         this.providerId = providerId;
+        this.profileImageUrl = profileImageUrl;
     }
 }
