@@ -1,5 +1,6 @@
 package com.InFrame.domains.reservation.controller;
 
+import com.InFrame.domains.reservation.controller.api.ReservationApi;
 import com.InFrame.domains.reservation.reqdto.ReservationRequestDto;
 import com.InFrame.domains.reservation.resdto.AvailableSlotDto;
 import com.InFrame.domains.reservation.resdto.ReservationResponseDto;
@@ -24,9 +25,10 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class ReservationController {
+public class ReservationController implements ReservationApi {
     private final ReservationService reservationService;
 
+    @Override
     @GetMapping("/experiences/{experienceId}/available-slots")
     public ResponseEntity<?> getAvailableSlots(
             @PathVariable Long experienceId,
@@ -37,6 +39,7 @@ public class ReservationController {
         return ResponseEntity.ok(slots);
     }
 
+    @Override
     @PostMapping("/reservation")
     public ResponseEntity<?> createReservation(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
