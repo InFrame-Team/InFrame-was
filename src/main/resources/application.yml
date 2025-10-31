@@ -69,3 +69,8 @@ jwt:
 app:
   oauth2:
     redirect-url: ${OAUTH2_REDIRECT_URL:http://localhost:3000/oauth-redirect}
+
+api:
+  public-data:
+    service-key: ${PUBLIC_DATA_SERVICE_KEY}
+    validate-url: "https://api.odcloud.kr/api/nts-businessman/v1/status"
