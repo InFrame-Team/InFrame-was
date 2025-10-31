@@ -5,6 +5,7 @@ import com.InFrame.domains.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "호스트로 변경 요청 DTO")
 public record HostRequestDto(
@@ -16,16 +17,34 @@ public record HostRequestDto(
         @NotBlank(message = "사업자명은 필수 입력입니다.")
         String businessName,
 
-        @Schema(description = "고객센터 전화번호", example = "111-1111")
+        @Schema(description = "고객센터 전화번호", example = "010-0000-0000")
         @NotBlank(message = "고객센터 전화번호는 필수 입력입니다.")
         String businessPhoneNumber,
 
-        @Schema(description = "고객센터 이메일", example = "abcd1234@gmail.com")
+        @Schema(description = "고객센터 이메일", example = "inGyeongsan@yu.ac.kr")
         @Email(message = "이메일 형식을 맞춰주세요.")
         String businessEmail,
 
         @Schema(description = "카카오톡 채널 주소", example = "https://pf.kakao.com/채널주소")
-        String kakaoAddress
+        String kakaoAddress,
+
+        @Schema(description = "호스트 소개", example = "흙을 담아 삶의 이야기를 빚어냅니다.")
+        String description,
+
+        @Schema(description = "위도", example = "37.5665")
+        @NotNull(message = "위도는 필수입니다.")
+        Double latitude,
+
+        @Schema(description = "경도", example = "126.9780")
+        @NotNull(message = "경도는 필수입니다.")
+        Double longitude,
+
+        @Schema(description = "기본 주소 (도로명/지번)", example = "서울 중구 세종대로 110")
+        @NotBlank(message = "기본 주소는 필수입니다.")
+        String addressBase,
+
+        @Schema(description = "상세 주소 (선택)", example = "2층")
+        String addressDetail
 ) {
     public Host toEntity(User user) {
         return Host.builder()
@@ -35,6 +54,11 @@ public record HostRequestDto(
                 .businessPhoneNumber(businessPhoneNumber)
                 .businessEmail(businessEmail)
                 .kakaoAddress(kakaoAddress)
+                .description(description)
+                .latitude(latitude)
+                .longitude(longitude)
+                .addressBase(addressBase)
+                .addressDetail(addressDetail)
                 .build();
     }
 }

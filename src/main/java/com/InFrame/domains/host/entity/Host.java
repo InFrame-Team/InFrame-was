@@ -36,6 +36,21 @@ public class Host {
     @Column
     private String kakaoAddress; // 카카오톡 채널 주소
 
+    @Column(length = 25)
+    private String description; // 호스트 소개
+
+    @Column(nullable = false)
+    private Double latitude; // 위도
+
+    @Column(nullable = false)
+    private Double longitude; // 경도
+
+    @Column(nullable = false)
+    private String addressBase; // 기본 주소
+
+    @Column
+    private String addressDetail; // 상세 주소
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user; // User 와 1:1
@@ -43,12 +58,20 @@ public class Host {
     @Builder
     public Host(String businessName, String businessPhoneNumber,
                 String businessEmail, String kakaoAddress,
-                String businessNumber, User user) {
+                String businessNumber, String description,
+                Double latitude, Double longitude,
+                String addressBase, String addressDetail,
+                User user) {
         this.businessNumber = businessNumber;
         this.businessName = businessName;
         this.businessPhoneNumber = businessPhoneNumber;
         this.businessEmail = businessEmail;
         this.kakaoAddress = kakaoAddress;
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.addressBase = addressBase;
+        this.addressDetail = addressDetail;
         this.user = user;
     }
 }

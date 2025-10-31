@@ -37,8 +37,13 @@ public enum ErrorCode {
     // 이미지 관련 오류
     FILE_IS_EMPTY(404, "파일이 비어있습니다."),
     FILE_UPLOAD_FAILED(400, "파일 업로드에 실패하였습니다."),
-    INVALID_FILE_URL(400, "잘못된 경로입니다.");
+    INVALID_FILE_URL(400, "잘못된 경로입니다."),
 
+    // 사업자 번호 조회 관련 오류
+    INVALID_BUSINESS_NUMBER_FORMAT(400, "사업자 번호 형식이 올바르지 않습니다."),
+    INVALID_BUSINESS_NUMBER(400, "국세청에 등록되지 않은 사업자 번호입니다."),
+    INACTIVE_BUSINESS_NUMBER(400, "휴업 또는 폐업 상태의 사업자입니다."),
+    BUSINESS_API_FAILED(500, "사업자 번호 조회 API 호출에 실패했습니다.");
     private final int status;
     private final String message;
 }

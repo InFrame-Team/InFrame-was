@@ -68,4 +68,5 @@ jobs:
               -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
               -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
               -e AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }} \
+              -e PUBLIC_DATA_SERVICE_KEY=${{ secrets.PUBLIC_DATA_SERVICE_KEY }} \
               ${{ secrets.DOCKERHUB_USERNAME }}/inframe-was:develop
