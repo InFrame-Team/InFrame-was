@@ -8,9 +8,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,6 +27,13 @@ public class HostController implements HostApi {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody @Valid HostRequestDto hostRequestDto) {
         hostService.changeToHost(userDetails.getUser(), hostRequestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @GetMapping("/check-business-number")
+    public ResponseEntity<?> checkBusinessNumber(@RequestParam String businessNumber) {
+        hostService.validateBusinessNumber(businessNumber);
         return ResponseEntity.ok().build();
     }
 }
