@@ -66,7 +66,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .provider(provider)
                     .providerId(providerId)
                     .build();
-            userRepository.save(user);
+            user = userRepository.save(user);
         }
 
         return new CustomOAuth2User(user, attributes);
