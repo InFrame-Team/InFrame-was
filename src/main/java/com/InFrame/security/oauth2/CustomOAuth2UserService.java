@@ -48,25 +48,34 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<User> optionalUser = userRepository.findByProviderAndProviderId(provider, providerId);
         User user;
 
-        String nickname = provider + "_" + providerId.substring(0, 6);
-
-        while (userRepository.findByNickname(nickname).isPresent()) {
-            nickname += (int)(Math.random() * 10);
-        }
-
         if (optionalUser.isPresent()) {
+            // 1. provider와 providerId로 유저를 찾음 (기존 소셜 로그인 유저)
             user = optionalUser.get();
         } else {
-            user = User.builder()
-                    .email(email)
-                    .password("")
-                    .nickname(nickname)
-                    .name(name)
-                    .role(Role.USER)
-                    .provider(provider)
-                    .providerId(providerId)
-                    .build();
-            user = userRepository.save(user);
+            // 2. providerId로는 못찾음 -> 이메일로 다시 찾아봄
+            Optional<User> optionalUserByEmail = userRepository.findByEmail(email);
+
+            if (optionalUserByEmail.isPresent()) {
+                // 3. 이메일이 이미 존재함 (기존 계정으로 로그인 처리)
+                user = optionalUserByEmail.get();
+            } else {
+                // 4. 정말 새로운 유저는 회원가입
+                String nickname = provider + "_" + providerId.substring(0, 6);
+                while (userRepository.findByNickname(nickname).isPresent()) {
+                    nickname += (int)(Math.random() * 10);
+                }
+
+                user = User.builder()
+                        .email(email)
+                        .password("")
+                        .nickname(nickname)
+                        .name(name)
+                        .role(Role.USER)
+                        .provider(provider)
+                        .providerId(providerId)
+                        .build();
+                user = userRepository.save(user); // 신규 저장 (ID 받아오기)
+            }
         }
 
         return new CustomOAuth2User(user, attributes);
