@@ -1,6 +1,9 @@
 package com.InFrame.domains.experience.reqdto;
 
 import com.InFrame.domains.experience.entity.Experience;
+import com.InFrame.domains.experience.entity.enums.Category;
+import com.InFrame.domains.experience.entity.enums.DetailField;
+import com.InFrame.domains.experience.entity.enums.ProfessionalField;
 import com.InFrame.domains.host.entity.Host;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +16,24 @@ import java.util.Set;
 
 @Schema(description = "체험 생성 요청 DTO")
 public record ExperienceRequestDto (
+        @Schema(description = "분야 카테고리")
+        @NotNull(message = "분야 카테고리는 필수입니다.")
+        Category category,
+
+        @Schema(description = "전문분야")
+        @NotNull(message = "전문분야는 필수입니다.")
+        ProfessionalField professionalField,
+
+        @Schema(description = "상세분야")
+        @NotNull(message = "상세분야는 필수입니다.")
+        DetailField detailField,
+
+        @Schema(description = "보유한 자격증", example = "한식조리기능사, 바리스타 1급")
+        String certifications,
+
+        @Schema(description = "업체 정보", example = "동민카페")
+        String companyInfo,
+
         @Schema(description = "체험 제목", example = "한 입의 예술, 핸드메이드 초콜릿")
         @NotBlank(message = "체험 제목은 필수 입력입니다.")
         String title,
@@ -43,6 +64,11 @@ public record ExperienceRequestDto (
     public Experience toEntity(Host host) {
         return Experience.builder()
                 .host(host)
+                .category(category)
+                .professionalField(professionalField)
+                .detailField(detailField)
+                .certifications(certifications)
+                .companyInfo(companyInfo)
                 .title(title)
                 .description(description)
                 .price(price)

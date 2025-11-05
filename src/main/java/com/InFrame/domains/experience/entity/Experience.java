@@ -1,5 +1,8 @@
 package com.InFrame.domains.experience.entity;
 
+import com.InFrame.domains.experience.entity.enums.Category;
+import com.InFrame.domains.experience.entity.enums.DetailField;
+import com.InFrame.domains.experience.entity.enums.ProfessionalField;
 import com.InFrame.domains.host.entity.Host;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -29,6 +32,24 @@ public class Experience {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category; // 분야 카테고리
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProfessionalField professionalField; // 전문분야
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DetailField detailField; // 상세분야
+
+    @Column(columnDefinition = "TEXT")
+    private String certifications; // 보유한 자격증
+
+    @Column(columnDefinition = "TEXT")
+    private String companyInfo; // 업체 정보
 
     @Column(nullable = false)
     private String title; // 체험 제목
@@ -63,10 +84,17 @@ public class Experience {
     private Host host;
 
     @Builder
-    public Experience(String title, String description, int price,
-                      int durationInHours, int maxCapacityPerSlot,
+    public Experience(Category category, ProfessionalField professionalField,
+                      DetailField detailField, String title, String description,
+                      String certifications, String companyInfo,
+                      int price, int durationInHours, int maxCapacityPerSlot,
                       Set<DayOfWeek> availableDaysOfWeek, Set<LocalTime> availableTimes,
                       Host host) {
+        this.category = category;
+        this.professionalField = professionalField;
+        this.detailField = detailField;
+        this.certifications = certifications;
+        this.companyInfo = companyInfo;
         this.title = title;
         this.description = description;
         this.price = price;
