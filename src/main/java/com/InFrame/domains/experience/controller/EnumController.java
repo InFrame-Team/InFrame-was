@@ -1,5 +1,6 @@
 package com.InFrame.domains.experience.controller;
 
+import com.InFrame.domains.experience.controller.api.EnumApi;
 import com.InFrame.domains.experience.entity.enums.Category;
 import com.InFrame.domains.experience.entity.enums.DetailField;
 import com.InFrame.domains.experience.entity.enums.ProfessionalField;
@@ -15,7 +16,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/enums")
-public class EnumController {
+public class EnumController implements EnumApi {
+    @Override
     @GetMapping("/categories")
     public ResponseEntity<?> getCategory() {
         List<EnumResponseDto> categories = Arrays.stream(Category.values())
@@ -24,6 +26,7 @@ public class EnumController {
         return ResponseEntity.ok(categories);
     }
 
+    @Override
     @GetMapping("/detailFields")
     public ResponseEntity<?> getDetailField() {
         List<EnumResponseDto> detailFields = Arrays.stream(DetailField.values())
@@ -32,6 +35,7 @@ public class EnumController {
         return ResponseEntity.ok(detailFields);
     }
 
+    @Override
     @GetMapping("/professionalFields")
     public ResponseEntity<?> getProfessionalField() {
         List<EnumResponseDto> professionalFields = Arrays.stream(ProfessionalField.values())
