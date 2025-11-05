@@ -48,11 +48,12 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                        .requestMatchers(SWAGGER_URL).permitAll()
-                        .requestMatchers("/api/v1/auth/**", "/oauth2/**",
-                                "/login/oauth2/**").permitAll()
-                        .requestMatchers("/api/v1/user/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/**").permitAll()
+                        // .requestMatchers(SWAGGER_URL).permitAll()
+                        // .requestMatchers("/api/v1/auth/**", "/oauth2/**",
+                        //        "/login/oauth2/**").permitAll()
+                        //.requestMatchers("/api/v1/user/**").permitAll()
+                        // .anyRequest().authenticated()
         );
 
         http.oauth2Login(oauth -> oauth
