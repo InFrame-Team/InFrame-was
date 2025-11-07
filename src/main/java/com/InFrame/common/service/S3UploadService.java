@@ -30,13 +30,13 @@ public class S3UploadService {
      * @param file 업로드할 파일
      * @return S3에 저장된 파일의 URL
      */
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file, String folderName) {
         if (file == null || file.isEmpty()) {
             throw new CustomException(ErrorCode.FILE_IS_EMPTY);
         }
 
         String originalFilename = file.getOriginalFilename();
-        String uniqueFileName = createUniqueFileName(originalFilename);
+        String uniqueFileName = createUniqueFileName(originalFilename, folderName);
 
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -80,8 +80,8 @@ public class S3UploadService {
     /**
      * 파일 이름을 유니크하게 생성합니다.
      */
-    private String createUniqueFileName(String originalFilename) {
-        return UUID.randomUUID().toString() + "-" + originalFilename;
+    private String createUniqueFileName(String originalFilename, String folderName) {
+        return folderName + "/" + UUID.randomUUID().toString() + "-" + originalFilename;
     }
 
     /**
