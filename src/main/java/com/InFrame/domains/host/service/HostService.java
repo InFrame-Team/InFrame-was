@@ -72,7 +72,7 @@ public class HostService {
         }
 
         // 4. 새 로고 이미지 S3에 업로드
-        String newLogoUrl = s3UploadService.uploadFile(file);
+        String newLogoUrl = s3UploadService.uploadFile(file, "logo");
 
         // 5. 호스트 정보에 새 이미지 URL 업데이트
         host.updateCompanyLogo(newLogoUrl);
