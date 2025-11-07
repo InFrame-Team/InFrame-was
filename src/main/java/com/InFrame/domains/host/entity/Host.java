@@ -100,4 +100,8 @@ public class Host {
         this.detailedDescription = detailedDescription;
         this.user = user;
     }
+
+    public void updateCompanyLogo(String companyLogoUrl) {
+        this.companyLogoUrl = companyLogoUrl;
+    }
 }
