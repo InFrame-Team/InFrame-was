@@ -10,8 +10,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.Builder;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -51,6 +54,22 @@ public class Host {
     @Column
     private String addressDetail; // 상세 주소
 
+    @Column
+    private LocalTime contactStartTime; // 연락 가능 시작 시간
+
+    @Column
+    private LocalTime contactEndTime; // 연락 가능 종료 시간
+
+    @Column(columnDefinition = "TEXT")
+    private String cancellationPolicy; // 취소 정책
+
+    @Column
+    private String companyLogoUrl; // 업체 로고 이미지 URL
+
+    @Column(columnDefinition = "TEXT")
+    private String detailedDescription; // 자세한 소개
+
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user; // User 와 1:1
@@ -61,7 +80,9 @@ public class Host {
                 String businessNumber, String description,
                 Double latitude, Double longitude,
                 String addressBase, String addressDetail,
-                User user) {
+                LocalTime contactStartTime, LocalTime contactEndTime,
+                String cancellationPolicy, String companyLogoUrl,
+                String detailedDescription, User user) {
         this.businessNumber = businessNumber;
         this.businessName = businessName;
         this.businessPhoneNumber = businessPhoneNumber;
@@ -72,6 +93,15 @@ public class Host {
         this.longitude = longitude;
         this.addressBase = addressBase;
         this.addressDetail = addressDetail;
+        this.contactStartTime = contactStartTime;
+        this.contactEndTime = contactEndTime;
+        this.cancellationPolicy = cancellationPolicy;
+        this.companyLogoUrl = companyLogoUrl;
+        this.detailedDescription = detailedDescription;
         this.user = user;
+    }
+
+    public void updateCompanyLogo(String companyLogoUrl) {
+        this.companyLogoUrl = companyLogoUrl;
     }
 }

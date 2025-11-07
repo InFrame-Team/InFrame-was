@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
 
 @Schema(description = "회원가입 요청 DTO")
 public record SignUpRequestDto(
-        @Schema(description = "사용자 이메일", example = "likelion13@gmail.com")
+        @Schema(description = "사용자 이메일", example = "abcd1234@gmail.com")
         @Email(message = "이메일 형식을 맞춰주세요.")
         @NotBlank(message = "이메일은 필수 입력입니다.")
         String email,

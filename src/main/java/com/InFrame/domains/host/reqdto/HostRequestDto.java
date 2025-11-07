@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalTime;
+
 @Schema(description = "호스트로 변경 요청 DTO")
 public record HostRequestDto(
         @Schema(description = "사업자 번호", example = "1234567890")
@@ -44,7 +46,16 @@ public record HostRequestDto(
         String addressBase,
 
         @Schema(description = "상세 주소 (선택)", example = "2층")
-        String addressDetail
+        String addressDetail,
+
+        @Schema(description = "연락 가능 시작 시간 (HH:mm)", example = "09:00")
+        LocalTime contactStartTime,
+
+        @Schema(description = "연락 가능 종료 시간 (HH:mm)", example = "18:00")
+        LocalTime contactEndTime,
+
+        @Schema(description = "취소 및 환불 정책")
+        String cancellationPolicy
 ) {
     public Host toEntity(User user) {
         return Host.builder()
@@ -59,6 +70,10 @@ public record HostRequestDto(
                 .longitude(longitude)
                 .addressBase(addressBase)
                 .addressDetail(addressDetail)
+                .contactStartTime(contactStartTime)
+                .contactEndTime(contactEndTime)
+                .cancellationPolicy(cancellationPolicy)
+                .companyLogoUrl(null)
                 .build();
     }
 }

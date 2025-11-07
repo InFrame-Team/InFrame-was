@@ -22,7 +22,19 @@ public interface AuthApi {
 
     @Operation(summary = "회원가입", description = "서비스를 이용하기 위한 회원가입입니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공"),
+            @ApiResponse(responseCode = "201", description = "회원가입 성공",
+                    content = @Content(mediaType = "application/json", examples = {
+                            @ExampleObject(value = """
+                                    {
+                                        "accessToken" : "<accessToken>",
+                                        "userId" : "<userId>",
+                                        "email" : "<email>",
+                                        "profileImageUrl": "null",
+                                        "role": "USER | HOST",
+                                        "accessToken" : "<accessToken>
+                                    }
+                                    """)
+                    })),
             @ApiResponse(responseCode = "400", description = "입력 누락 및 형식 비일치",
                     content = @Content(mediaType = "application/json", examples = {
                             @ExampleObject(name = "필드 누락", value = """
@@ -61,8 +73,9 @@ public interface AuthApi {
                                         "accessToken" : "<accessToken>",
                                         "userId" : "<userId>",
                                         "email" : "<email>",
-                                        "role": "USER | HOST"
-                                        "profileImageUrl": "https://s3.../image-url.jpg"
+                                        "profileImageUrl": "https://s3.../image-url.jpg",
+                                        "role": "USER | HOST",
+                                        "accessToken" : "<accessToken>"
                                     }
                                     """)
                     })),

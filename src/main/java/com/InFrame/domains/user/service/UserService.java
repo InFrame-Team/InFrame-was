@@ -27,7 +27,7 @@ public class UserService {
         }
 
         // 2. 새 이미지 S3에 업로드
-        String newImageUrl = s3UploadService.uploadFile(file);
+        String newImageUrl = s3UploadService.uploadFile(file, "profile");
 
         // 3. 유저 정보에 새 이미지 URL 업데이트
         user.updateProfileImage(newImageUrl);
