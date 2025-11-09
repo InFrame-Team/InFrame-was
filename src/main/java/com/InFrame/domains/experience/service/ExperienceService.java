@@ -10,12 +10,25 @@ import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExperienceService {
     private final ExperienceRepository experienceRepository;
+    private final VectorStore vectorStore;
 
     // 체험 생성
     public ExperienceResponseDto createExperience(User user, ExperienceRequestDto requestDto) {
@@ -30,9 +43,98 @@ public class ExperienceService {
         }
 
         Experience experience = requestDto.toEntity(host);
-
         Experience savedExperience = experienceRepository.save(experience);
 
+        // VectorDB에 체험 정보 인덱싱
+        indexExperience(savedExperience);
+
         return  ExperienceResponseDto.from(savedExperience, host);
+    }
+
+    // AI 기반 체험 추천
+    @Transactional(readOnly = true)
+    public List<ExperienceResponseDto> recommendExperiences(String query, int topK) {
+
+        // 1. VectorStore에서 유사한 Document 검색
+        List<Document> documents = vectorStore.similaritySearch(
+                SearchRequest.builder()
+                        .query(query)
+                        .topK(topK)
+                        .filterExpression("type == 'experience'")
+                        .build()
+        );
+
+        if (documents.isEmpty()) {
+            return List.of();
+        }
+
+        // 2. Document 메타데이터에서 experienceId 리스트 추출
+        List<Long> experienceIds = documents.stream()
+                .map(doc -> doc.getMetadata().get("experienceId"))
+                .filter(Objects::nonNull)
+                .map(Object::toString)
+                .map(Long::valueOf)
+                .distinct()
+                .toList();
+
+        if (experienceIds.isEmpty()) {
+            return List.of();
+        }
+
+        // 3. MySQL에서 ID 목록으로 체험 정보 일괄 조회
+        Map<Long, Experience> experienceMap = experienceRepository.findAllById(experienceIds)
+                .stream()
+                .collect(Collectors.toMap(Experience::getId, e -> e));
+
+        // 4. AI가 정렬한 순서를 기준으로 DTO 리스트 생성
+        return documents.stream()
+                .map(doc -> {
+                    Object idMeta = doc.getMetadata().get("experienceId");
+                    if (idMeta == null) return null;
+
+                    Long expId = Long.valueOf(idMeta.toString());
+                    Experience exp = experienceMap.get(expId);
+                    if (exp == null) return null;
+
+                    return ExperienceResponseDto.from(exp, exp.getHost());
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    // 체험 정보를 VectorDB에 인덱싱
+    private void indexExperience(Experience experience) {
+        try {
+            // 1. AI가 이해할 수 있도록 엔티티 정보를 텍스트로 변환
+            String content = buildExperienceContent(experience);
+
+            // 2. 메타데이터 설정 (필터링 및 식별용)
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("experienceId", experience.getId());
+            metadata.put("hostId", experience.getHost().getId());
+            metadata.put("type", "experience");
+            metadata.put("title", experience.getTitle());
+
+            // 3. Document 객체 생성 및 VectorStore에 추가
+            Document doc = new Document(content, metadata);
+            vectorStore.add(List.of(doc));
+
+            log.info("Indexed experience {} into VectorStore", experience.getId());
+        } catch (Exception e) {
+            // 인덱싱 작업이 실패하더라도, 체험 생성 트랜잭션은 롤백시키지 않음
+            log.error("Failed to index experience {} into VectorStore", experience.getId(), e);
+        }
+    }
+
+    // VectorDB에 저장할 텍스트 생성
+    private String buildExperienceContent(Experience e) {
+        StringBuilder sb = new StringBuilder();
+        if (e.getTitle() != null) sb.append("체험 제목: ").append(e.getTitle()).append("\n");
+        if (e.getDescription() != null) sb.append("체험 설명: ").append(e.getDescription()).append("\n");
+        if (e.getCategory() != null) sb.append("카테고리: ").append(e.getCategory().getDescription()).append("\n");
+        if (e.getProfessionalField() != null) sb.append("전문 분야: ").append(e.getProfessionalField().getDescription()).append("\n");
+        if (e.getDetailField() != null) sb.append("세부 분야: ").append(e.getDetailField().getDescription()).append("\n");
+
+        return sb.toString();
     }
 }

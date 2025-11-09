@@ -69,4 +69,8 @@ jobs:
               -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
               -e AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }} \
               -e PUBLIC_DATA_SERVICE_KEY=${{ secrets.PUBLIC_DATA_SERVICE_KEY }} \
+              -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+              -e PG_DB_URL=${{ secrets.PG_DB_URL }} \
+              -e PG_DB_USERNAME=${{ secrets.PG_DB_USERNAME }} \
+              -e PG_DB_PASSWORD=${{ secrets.PG_DB_PASSWORD }} \
               ${{ secrets.DOCKERHUB_USERNAME }}/inframe-was:develop
