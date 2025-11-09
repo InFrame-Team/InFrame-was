@@ -1,12 +1,12 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.5.5'
+	id 'org.springframework.boot' version '3.4.2'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.InFrame'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+description = 'InFrame WAS'
 
 java {
 	toolchain {
@@ -14,32 +14,29 @@ java {
 	}
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 repositories {
 	mavenCentral()
 }
 
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:1.0.3"
+		mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:3.3.0"
+	}
+}
+
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// Spring 기본
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	// lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	// MySQL 메인 DB
+	implementation 'com.mysql:mysql-connector-j:9.1.0'
 
-	// DB
-	implementation 'com.mysql:mysql-connector-j'
-
-	// Test
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// Lombok
+	compileOnly 'org.projectlombok:lombok:1.18.32'
+	annotationProcessor 'org.projectlombok:lombok:1.18.32'
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -53,7 +50,21 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 
 	// AWS S3
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+
+	// Spring AI - OpenAI (chat + embedding)
+	implementation 'org.springframework.ai:spring-ai-starter-model-openai:1.0.3'
+
+	// PgVector (수동 구성용)
+	implementation 'org.springframework.ai:spring-ai-pgvector-store:1.0.3'
+
+	// PostgreSQL 드라이버 (pgvector 용)
+	runtimeOnly 'org.postgresql:postgresql:42.7.5'
+
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
