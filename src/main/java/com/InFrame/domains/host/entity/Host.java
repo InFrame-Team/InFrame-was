@@ -1,8 +1,11 @@
 package com.InFrame.domains.host.entity;
 
+import com.InFrame.domains.host.entity.enums.Category;
 import com.InFrame.domains.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,6 +29,10 @@ public class Host {
 
     @Column(nullable = false, length = 10)
     private String businessNumber; // 사업자 번호
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category; // 분야 카테고리
 
     @Column(nullable = false)
     private String businessName; // 사업자명
@@ -75,7 +82,7 @@ public class Host {
     private User user; // User 와 1:1
 
     @Builder
-    public Host(String businessName, String businessPhoneNumber,
+    public Host(String businessName, String businessPhoneNumber, Category category,
                 String businessEmail, String kakaoAddress,
                 String businessNumber, String description,
                 Double latitude, Double longitude,
@@ -84,6 +91,7 @@ public class Host {
                 String cancellationPolicy, String companyLogoUrl,
                 String detailedDescription, User user) {
         this.businessNumber = businessNumber;
+        this.category = category;
         this.businessName = businessName;
         this.businessPhoneNumber = businessPhoneNumber;
         this.businessEmail = businessEmail;

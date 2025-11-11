@@ -1,6 +1,6 @@
 package com.InFrame.domains.experience.entity;
 
-import com.InFrame.domains.experience.entity.enums.Category;
+import com.InFrame.domains.host.entity.enums.Category;
 import com.InFrame.domains.experience.entity.enums.DetailField;
 import com.InFrame.domains.experience.entity.enums.ProfessionalField;
 import com.InFrame.domains.host.entity.Host;
@@ -84,13 +84,12 @@ public class Experience {
     private Host host;
 
     @Builder
-    public Experience(Category category, ProfessionalField professionalField,
+    public Experience(ProfessionalField professionalField,
                       DetailField detailField, String title, String description,
                       String certifications, String companyInfo,
                       int price, int durationInHours, int maxCapacityPerSlot,
                       Set<DayOfWeek> availableDaysOfWeek, Set<LocalTime> availableTimes,
                       Host host) {
-        this.category = category;
         this.professionalField = professionalField;
         this.detailField = detailField;
         this.certifications = certifications;

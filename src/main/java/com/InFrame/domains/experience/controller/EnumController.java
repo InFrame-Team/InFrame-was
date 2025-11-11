@@ -1,7 +1,7 @@
 package com.InFrame.domains.experience.controller;
 
 import com.InFrame.domains.experience.controller.api.EnumApi;
-import com.InFrame.domains.experience.entity.enums.Category;
+import com.InFrame.domains.host.entity.enums.Category;
 import com.InFrame.domains.experience.entity.enums.DetailField;
 import com.InFrame.domains.experience.entity.enums.ProfessionalField;
 import com.InFrame.domains.experience.resdto.EnumResponseDto;
