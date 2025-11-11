@@ -1,10 +1,13 @@
 package com.InFrame.domains.reservation.entity;
 
 import com.InFrame.domains.experience.entity.Experience;
+import com.InFrame.domains.reservation.entity.enums.ReservationStatus;
 import com.InFrame.domains.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,6 +45,10 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDateTime createdAt; // 예약 생성 시간
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReservationStatus status; // 예약 상태
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
@@ -50,13 +57,18 @@ public class Reservation {
 
     @Builder
     public Reservation(LocalDateTime reservedStartTime, int numChildren, int numAdults,
-                       int totalPrice, LocalDateTime createdAt, User user, Experience experience) {
+                       int totalPrice, User user, Experience experience) {
         this.reservedStartTime = reservedStartTime;
         this.numAdults = numAdults;
         this.numChildren = numChildren;
         this.totalPrice = totalPrice;
         this.createdAt = LocalDateTime.now();
+        this.status = ReservationStatus.RESERVED;
         this.user = user;
         this.experience = experience;
+    }
+
+    public void updateStatus(ReservationStatus status) {
+        this.status = status;
     }
 }
