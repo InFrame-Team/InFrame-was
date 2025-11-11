@@ -1,7 +1,7 @@
 package com.InFrame.domains.experience.reqdto;
 
 import com.InFrame.domains.experience.entity.Experience;
-import com.InFrame.domains.experience.entity.enums.Category;
+import com.InFrame.domains.host.entity.enums.Category;
 import com.InFrame.domains.experience.entity.enums.DetailField;
 import com.InFrame.domains.experience.entity.enums.ProfessionalField;
 import com.InFrame.domains.host.entity.Host;
@@ -64,7 +64,6 @@ public record ExperienceRequestDto (
     public Experience toEntity(Host host) {
         return Experience.builder()
                 .host(host)
-                .category(category)
                 .professionalField(professionalField)
                 .detailField(detailField)
                 .certifications(certifications)

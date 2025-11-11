@@ -1,6 +1,7 @@
 package com.InFrame.domains.host.reqdto;
 
 import com.InFrame.domains.host.entity.Host;
+import com.InFrame.domains.host.entity.enums.Category;
 import com.InFrame.domains.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -14,6 +15,10 @@ public record HostRequestDto(
         @Schema(description = "사업자 번호", example = "1234567890")
         @NotBlank(message = "사업자 번호는 필수 입력입니다.")
         String businessNumber,
+
+        @Schema(description = "분야 카테고리")
+        @NotNull(message = "분야 카테고리는 필수입니다.")
+        Category category,
 
         @Schema(description = "사업자명", example = "브릿지")
         @NotBlank(message = "사업자명은 필수 입력입니다.")
@@ -61,6 +66,7 @@ public record HostRequestDto(
         return Host.builder()
                 .user(user)
                 .businessNumber(businessNumber)
+                .category(category)
                 .businessName(businessName)
                 .businessPhoneNumber(businessPhoneNumber)
                 .businessEmail(businessEmail)

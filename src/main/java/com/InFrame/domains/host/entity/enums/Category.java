@@ -1,4 +1,4 @@
-package com.InFrame.domains.experience.entity.enums;
+package com.InFrame.domains.host.entity.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
