@@ -4,9 +4,15 @@ import com.InFrame.common.exception.CustomException;
 import com.InFrame.common.exception.error.ErrorCode;
 import com.InFrame.common.service.BusinessValidationService;
 import com.InFrame.common.service.S3UploadService;
+import com.InFrame.domains.experience.entity.Experience;
+import com.InFrame.domains.experience.entity.enums.DetailField;
+import com.InFrame.domains.experience.repository.ExperienceRepository;
 import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.host.repository.HostRepository;
 import com.InFrame.domains.host.reqdto.HostRequestDto;
+import com.InFrame.domains.host.resdto.HostMapResponseDto;
+import com.InFrame.domains.host.resdto.MyHostInfoResponseDto;
+import com.InFrame.domains.review.repository.ReviewRepository;
 import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.entity.User;
 import com.InFrame.domains.user.repository.UserRepository;
@@ -14,6 +20,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional
@@ -23,6 +33,8 @@ public class HostService {
     private final UserRepository userRepository;
     private final BusinessValidationService businessValidationService;
     private final S3UploadService s3UploadService;
+    private final ReviewRepository reviewRepository;
+    private final ExperienceRepository experienceRepository;
 
     // 호스트로 변경
     public void changeToHost(User user, HostRequestDto hostRequestDto) {
@@ -79,5 +91,38 @@ public class HostService {
         hostRepository.save(host);
 
         return newLogoUrl;
+    }
+
+    // 지도 표시용 전체 호스트 목록 조회
+    @Transactional(readOnly = true)
+    public List<HostMapResponseDto> getAllHostsForMap() {
+        return hostRepository.findAll().stream()
+                .map(host -> {
+                    long reviewCount = reviewRepository.countByReservation_Experience_Host(host);
+
+                    DetailField detailField = null;
+                    Optional<Experience> firstExperience = experienceRepository.findTopByHost(host);
+                    if (firstExperience.isPresent()) {
+                        detailField = firstExperience.get().getDetailField();
+                    }
+
+                    return HostMapResponseDto.from(host, reviewCount, detailField);
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 호스트 자신 정보 조회
+    @Transactional(readOnly = true)
+    public MyHostInfoResponseDto getMyHostInfo(User user) {
+        // 1. 호스트 권한 확인
+        if (user.getRole() != Role.HOST) {
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+        // 2. 호스트 정보 가져오기
+        Host host = user.getHost();
+        if (host == null) {
+            throw new CustomException(ErrorCode.HOST_NOT_FOUND);
+        }
+        return MyHostInfoResponseDto.from(host);
     }
 }
