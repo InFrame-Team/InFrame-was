@@ -33,11 +33,17 @@ public enum ErrorCode {
     RESERVATION_ON_CLOSED_DAY(400, "체험 휴무일에는 예약할 수 없습니다."),
     INVALID_RESERVATION_TIME(400, "선택한 시간은 예약 가능한 시간이 아닙니다."),
     RESERVATION_CAPACITY_EXCEEDED(400, "최대 예약 가능 인원을 초과했습니다."),
+    RESERVATION_NOT_FOUND(404, "해당 예약을 찾을 수 없습니다."),
 
     // 이미지 관련 오류
     FILE_IS_EMPTY(404, "파일이 비어있습니다."),
     FILE_UPLOAD_FAILED(400, "파일 업로드에 실패하였습니다."),
     INVALID_FILE_URL(400, "잘못된 경로입니다."),
+
+    // 리뷰 관련 오류
+    REVIEW_NOT_ALLOWED(403, "체험 완료 상태에서만 리뷰를 작성할 수 있습니다."),
+    REVIEW_ALREADY_EXISTS(409, "이미 리뷰를 작성한 체험입니다."),
+    REVIEW_NOT_FOUND(404, "해당 리뷰를 찾을 수 없습니다."),
 
     // 사업자 번호 조회 관련 오류
     INVALID_BUSINESS_NUMBER_FORMAT(400, "사업자 번호 형식이 올바르지 않습니다."),
