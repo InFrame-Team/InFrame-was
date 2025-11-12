@@ -2,6 +2,7 @@ package com.InFrame.domains.reservation.repository;
 
 import com.InFrame.domains.reservation.entity.Reservation;
 import com.InFrame.domains.reservation.entity.enums.ReservationStatus;
+import com.InFrame.domains.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +25,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findAllByStatus(ReservationStatus status);
 
+    // 유저가 예약한 내역 리스트 조회
+    List<Reservation> findAllByUserOrderByReservedStartTimeDesc(User user);
 }

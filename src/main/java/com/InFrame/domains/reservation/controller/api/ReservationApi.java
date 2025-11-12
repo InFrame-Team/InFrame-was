@@ -1,17 +1,21 @@
 package com.InFrame.domains.reservation.controller.api;
 
 import com.InFrame.domains.reservation.reqdto.ReservationRequestDto;
+import com.InFrame.domains.reservation.resdto.MyReservationResponseDto;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -149,5 +153,17 @@ public interface ReservationApi {
 
             @Parameter(description = "예약 생성 정보")
             @RequestBody @Valid ReservationRequestDto requestDto
+    );
+
+    @Operation(summary = "내 예약 내역 조회", description = "로그인한 사용자의 모든 예약 내역을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = MyReservationResponseDto.class)))),
+            @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    ResponseEntity<?> getMyReservations(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     );
 }
