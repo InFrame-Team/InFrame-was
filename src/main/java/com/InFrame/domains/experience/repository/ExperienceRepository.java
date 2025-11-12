@@ -5,8 +5,12 @@ import com.InFrame.domains.host.entity.Host;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ExperienceRepository extends JpaRepository<Experience, Long> {
     // 호스트가 등록한 모든 체험 찾기
     List<Experience> findAllByHost(Host host);
+
+    // 호스트의 체험 중 첫 번째 데이터를 가져옴
+    Optional<Experience> findTopByHost(Host host);
 }
