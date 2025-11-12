@@ -8,7 +8,9 @@ import com.InFrame.domains.reservation.entity.Reservation;
 import com.InFrame.domains.reservation.repository.ReservationRepository;
 import com.InFrame.domains.reservation.reqdto.ReservationRequestDto;
 import com.InFrame.domains.reservation.resdto.AvailableSlotDto;
+import com.InFrame.domains.reservation.resdto.MyReservationResponseDto;
 import com.InFrame.domains.reservation.resdto.ReservationResponseDto;
+import com.InFrame.domains.review.repository.ReviewRepository;
 import com.InFrame.domains.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ExperienceRepository experienceRepository;
+    private final ReviewRepository reviewRepository;
 
     // 특정 날짜의 예약 가능한 시간 목록 조회
     @Transactional(readOnly = true)
@@ -98,6 +101,20 @@ public class ReservationService {
         // 6. 저장 및 DTO 변환 후 반환
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponseDto.from(savedReservation);
+    }
+
+    // 내 예약 내역 조회
+    @Transactional(readOnly = true)
+    public List<MyReservationResponseDto> getMyReservations(User user) {
+        List<Reservation> reservations = reservationRepository.findAllByUserOrderByReservedStartTimeDesc(user);
+
+        return reservations.stream()
+                .map(reservation -> {
+                    // 각 예약별로 리뷰 작성 여부 확인
+                    boolean reviewWritten = reviewRepository.findByReservationId(reservation.getId()).isPresent();
+                    return MyReservationResponseDto.from(reservation, reviewWritten);
+                })
+                .collect(Collectors.toList());
     }
 
     // 예약 요청 유효성 검증
