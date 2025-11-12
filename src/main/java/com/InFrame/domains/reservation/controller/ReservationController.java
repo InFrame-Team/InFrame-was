@@ -3,6 +3,7 @@ package com.InFrame.domains.reservation.controller;
 import com.InFrame.domains.reservation.controller.api.ReservationApi;
 import com.InFrame.domains.reservation.reqdto.ReservationRequestDto;
 import com.InFrame.domains.reservation.resdto.AvailableSlotDto;
+import com.InFrame.domains.reservation.resdto.MyReservationResponseDto;
 import com.InFrame.domains.reservation.resdto.ReservationResponseDto;
 import com.InFrame.domains.reservation.service.ReservationService;
 import com.InFrame.security.userdetails.UserDetailsImpl;
@@ -48,5 +49,14 @@ public class ReservationController implements ReservationApi {
         ReservationResponseDto responseDto = reservationService.createReservation(userDetails.getUser(), requestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    @Override
+    @GetMapping("/reservation/me")
+    public ResponseEntity<?> getMyReservations(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        List<MyReservationResponseDto> reservations = reservationService.getMyReservations(userDetails.getUser());
+        return ResponseEntity.ok(reservations);
     }
 }
