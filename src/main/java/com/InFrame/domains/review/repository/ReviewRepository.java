@@ -1,6 +1,6 @@
 package com.InFrame.domains.review.repository;
 
-import com.InFrame.domains.experience.entity.Experience;
+import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.resdto.ReviewResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
+    // 호스트의 리뷰 개수를 반환
+    long countByReservation_Experience_Host(Host host);
 
     // 예약 ID로 리뷰가 이미 작성되었는지 확인
     Optional<Review> findByReservationId(Long reservationId);

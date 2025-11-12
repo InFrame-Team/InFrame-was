@@ -2,6 +2,8 @@ package com.InFrame.domains.host.controller;
 
 import com.InFrame.domains.host.controller.api.HostApi;
 import com.InFrame.domains.host.reqdto.HostRequestDto;
+import com.InFrame.domains.host.resdto.HostMapResponseDto;
+import com.InFrame.domains.host.resdto.MyHostInfoResponseDto;
 import com.InFrame.domains.host.service.HostService;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -51,5 +54,22 @@ public class HostController implements HostApi {
         String logoUrl = hostService.uploadCompanyLogo(userDetails.getUser(), file);
 
         return ResponseEntity.ok(Map.of("companyLogoUrl", logoUrl));
+    }
+
+    @Override
+    @GetMapping("/map")
+    public ResponseEntity<?> getAllHostsForMap() {
+        List<HostMapResponseDto> hostList = hostService.getAllHostsForMap();
+        return ResponseEntity.ok(hostList);
+    }
+
+    @Override
+    @GetMapping("/me")
+    // [수정]
+    public ResponseEntity<?> getMyHostInfo(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        MyHostInfoResponseDto hostInfo = hostService.getMyHostInfo(userDetails.getUser());
+        return ResponseEntity.ok(hostInfo);
     }
 }
