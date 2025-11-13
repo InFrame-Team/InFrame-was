@@ -1,6 +1,5 @@
 package com.InFrame.domains.experience.entity;
 
-import com.InFrame.domains.host.entity.enums.Category;
 import com.InFrame.domains.experience.entity.enums.DetailField;
 import com.InFrame.domains.experience.entity.enums.ProfessionalField;
 import com.InFrame.domains.host.entity.Host;
@@ -22,7 +21,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,10 +33,6 @@ public class Experience {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Category category; // 분야 카테고리
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -60,6 +57,11 @@ public class Experience {
     @Column(nullable = false)
     private int price; // 체험 기본 가격
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "experience_images", joinColumns = @JoinColumn(name = "experience_id"))
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    private List<String> imageUrls = new ArrayList<>(); // 체험 관련 이미지
+
     @Column(nullable = false)
     private int durationInHours; // 체험  소요 시간 (시간 단위)
 
@@ -69,7 +71,7 @@ public class Experience {
     // 예약 가능한 요일 목록
     @ElementCollection(targetClass = DayOfWeek.class, fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "experience_available_days", joinColumns = @JoinColumn(name = "experience_id")) // 테이블명 변경
+    @CollectionTable(name = "experience_available_days", joinColumns = @JoinColumn(name = "experience_id"))
     @Column(name = "day_of_week", nullable = false)
     private Set<DayOfWeek> availableDaysOfWeek = new HashSet<>();
 
@@ -106,5 +108,9 @@ public class Experience {
             this.availableTimes = availableTimes;
         }
         this.host = host;
+    }
+
+    public void updateImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 }

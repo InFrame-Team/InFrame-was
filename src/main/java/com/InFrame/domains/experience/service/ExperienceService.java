@@ -2,6 +2,7 @@ package com.InFrame.domains.experience.service;
 
 import com.InFrame.common.exception.CustomException;
 import com.InFrame.common.exception.error.ErrorCode;
+import com.InFrame.common.service.S3UploadService;
 import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.experience.repository.ExperienceRepository;
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
@@ -16,6 +17,7 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +31,11 @@ import java.util.stream.Collectors;
 public class ExperienceService {
     private final ExperienceRepository experienceRepository;
     private final VectorStore vectorStore;
+    private final S3UploadService s3UploadService;
 
     // 체험 생성
-    public ExperienceResponseDto createExperience(User user, ExperienceRequestDto requestDto) {
+    @Transactional
+    public ExperienceResponseDto createExperience(User user, ExperienceRequestDto requestDto, List<MultipartFile> images) {
         if (user.getRole() != Role.HOST) {
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
@@ -45,10 +49,19 @@ public class ExperienceService {
         Experience experience = requestDto.toEntity(host);
         Experience savedExperience = experienceRepository.save(experience);
 
+        String folderName = "experiences/" + savedExperience.getId();
+        List<String> imageUrls = images.stream()
+                .map(file -> s3UploadService.uploadFile(file, folderName))
+                .collect(Collectors.toList());
+
+        // 이미지 URL 리스트를 엔티티에 업데이트 및 DB 재저장
+        savedExperience.updateImageUrls(imageUrls);
+        Experience updatedExperience = experienceRepository.save(savedExperience);
+
         // VectorDB에 체험 정보 인덱싱
         indexExperience(savedExperience);
 
-        return  ExperienceResponseDto.from(savedExperience, host);
+        return  ExperienceResponseDto.from(updatedExperience, host);
     }
 
     // AI 기반 체험 추천
@@ -131,7 +144,6 @@ public class ExperienceService {
         StringBuilder sb = new StringBuilder();
         if (e.getTitle() != null) sb.append("체험 제목: ").append(e.getTitle()).append("\n");
         if (e.getDescription() != null) sb.append("체험 설명: ").append(e.getDescription()).append("\n");
-        if (e.getCategory() != null) sb.append("카테고리: ").append(e.getCategory().getDescription()).append("\n");
         if (e.getProfessionalField() != null) sb.append("전문 분야: ").append(e.getProfessionalField().getDescription()).append("\n");
         if (e.getDetailField() != null) sb.append("세부 분야: ").append(e.getDetailField().getDescription()).append("\n");
 
