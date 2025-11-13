@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 
 @Schema(description = "체험 정보 응답 DTO")
@@ -17,6 +18,7 @@ public record ExperienceResponseDto (
         int price,
         int durationInHours,
         int maxCapacityPerSlot,
+        List<String> imageUrls,
         Set<DayOfWeek> availableDaysOfWeek,
         Set<LocalTime> availableTimes
 
@@ -30,6 +32,7 @@ public record ExperienceResponseDto (
                 experience.getPrice(),
                 experience.getDurationInHours(),
                 experience.getMaxCapacityPerSlot(),
+                experience.getImageUrls(),
                 experience.getAvailableDaysOfWeek(),
                 experience.getAvailableTimes()
         );
