@@ -31,7 +31,7 @@ public interface AuthApi {
                                         "email" : "<email>",
                                         "profileImageUrl": "null",
                                         "role": "USER | HOST",
-                                        "accessToken" : "<accessToken>
+                                        "accessToken" : "<accessToken>"
                                     }
                                     """)
                     })),
