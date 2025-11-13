@@ -96,16 +96,17 @@ public class HostService {
     // 지도 표시용 전체 호스트 목록 조회
     @Transactional(readOnly = true)
     public List<HostMapResponseDto> getAllHostsForMap() {
-        return hostRepository.findAll().stream()
+        // 1. 체험이 있는 호스트만 조회
+        List<Host> hostsWithExperiences = experienceRepository.findDistinctHostsWithExperiences();
+
+        // 2. 호스트 목록으로 DTO 생성
+        return hostsWithExperiences.stream()
                 .map(host -> {
                     long reviewCount = reviewRepository.countByReservation_Experience_Host(host);
 
-                    DetailField detailField = null;
-                    Optional<Experience> firstExperience = experienceRepository.findTopByHost(host);
-                    if (firstExperience.isPresent()) {
-                        detailField = firstExperience.get().getDetailField();
-                    }
-
+                    DetailField detailField = experienceRepository.findTopByHost(host)
+                            .get()
+                            .getDetailField();
                     return HostMapResponseDto.from(host, reviewCount, detailField);
                 })
                 .collect(Collectors.toList());
