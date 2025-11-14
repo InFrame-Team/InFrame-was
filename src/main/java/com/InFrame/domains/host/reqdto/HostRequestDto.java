@@ -60,7 +60,10 @@ public record HostRequestDto(
         LocalTime contactEndTime,
 
         @Schema(description = "취소 및 환불 정책")
-        String cancellationPolicy
+        String cancellationPolicy,
+
+        @Schema(description = "자세한 소개")
+        String detailedDescription
 ) {
     public Host toEntity(User user) {
         return Host.builder()
@@ -79,6 +82,7 @@ public record HostRequestDto(
                 .contactStartTime(contactStartTime)
                 .contactEndTime(contactEndTime)
                 .cancellationPolicy(cancellationPolicy)
+                .detailedDescription(detailedDescription)
                 .companyLogoUrl(null)
                 .build();
     }
