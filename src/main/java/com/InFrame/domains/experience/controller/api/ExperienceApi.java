@@ -6,6 +6,7 @@ import com.InFrame.security.userdetails.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,9 +14,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -26,29 +30,52 @@ import java.util.List;
 @Tag(name = "Experience API", description = "체험 관련 API")
 public interface ExperienceApi {
 
-    @Operation(summary = "체험 생성", description = "호스트가 새로운 체험을 생성하는 기능입니다.")
+    @Operation(summary = "체험 생성", description = "새로운 체험을 텍스트 정보로 먼저 등록합니다. (이미지 제외)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "체험 생성 성공",
-                    content = @Content(schema = @Schema(implementation = ExperienceResponseDto.class))),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
-            @ApiResponse(responseCode = "403", description = "호스트가 아님"),
-            @ApiResponse(responseCode = "404", description = "호스트 정보를 찾을 수 없음")
+                    content = @Content(schema = @Schema(implementation = ExperienceResponseDto.class)))
     })
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> createExperience(
             @Parameter(hidden = true)
             @AuthenticationPrincipal UserDetailsImpl userDetails,
 
-            @Parameter(description = "체험 정보")
-            @RequestPart("requestDto") ExperienceRequestDto requestDto,
+            @Valid
+            @RequestBody
+            @Parameter(description = "체험 정보 DTO")
+            ExperienceRequestDto requestDto
+    );
 
-            @Parameter(description = "체험 이미지 파일 목록")
-            @RequestPart("images") List<MultipartFile> images);
+
+    @Operation(summary = "체험 이미지 업로드", description = "생성된 체험 ID에 이미지 파일들을 업로드합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "이미지 업로드 성공",
+                    content = @Content(schema = @Schema(implementation = ExperienceResponseDto.class)))
+    })
+    ResponseEntity<?> uploadExperienceImages(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+
+            @Parameter(description = "이미지를 업로드할 체험 ID")
+            @PathVariable Long experienceId,
+
+            @RequestPart("images")
+            @Parameter(
+                    description = "체험 이미지 파일 목록",
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            array = @ArraySchema(
+                                    schema = @Schema(type = "string", format = "binary")
+                            )
+                    )
+            )
+            List<MultipartFile> images
+    );
 
 
     @Operation(summary = "AI 체험 추천", description = "검색 쿼리와 유사한 체험을 AI가 추천합니다.")
     @ApiResponse(responseCode = "200", description = "추천 목록 조회 성공")
-    @GetMapping("/recommend")
-    ResponseEntity<List<ExperienceResponseDto>> recommendExperiences(
+    ResponseEntity<?> recommendExperiences(
             @Parameter(name = "query", in = ParameterIn.QUERY, required = true, description = "검색어 (예: 친구와 둘이 시험 끝나고 감성 있게 즐기기 좋은 체험)")
             @RequestParam("query") String query,
 

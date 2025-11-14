@@ -1,7 +1,6 @@
 package com.InFrame.domains.experience.reqdto;
 
 import com.InFrame.domains.experience.entity.Experience;
-import com.InFrame.domains.host.entity.enums.Category;
 import com.InFrame.domains.experience.entity.enums.DetailField;
 import com.InFrame.domains.experience.entity.enums.ProfessionalField;
 import com.InFrame.domains.host.entity.Host;
@@ -16,10 +15,6 @@ import java.util.Set;
 
 @Schema(description = "체험 생성 요청 DTO")
 public record ExperienceRequestDto (
-        @Schema(description = "분야 카테고리")
-        @NotNull(message = "분야 카테고리는 필수입니다.")
-        Category category,
-
         @Schema(description = "전문분야")
         @NotNull(message = "전문분야는 필수입니다.")
         ProfessionalField professionalField,

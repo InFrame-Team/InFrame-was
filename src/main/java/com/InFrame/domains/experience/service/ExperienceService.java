@@ -35,7 +35,7 @@ public class ExperienceService {
 
     // 체험 생성
     @Transactional
-    public ExperienceResponseDto createExperience(User user, ExperienceRequestDto requestDto, List<MultipartFile> images) {
+    public ExperienceResponseDto createExperience(User user, ExperienceRequestDto requestDto) {
         if (user.getRole() != Role.HOST) {
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
@@ -49,19 +49,35 @@ public class ExperienceService {
         Experience experience = requestDto.toEntity(host);
         Experience savedExperience = experienceRepository.save(experience);
 
-        String folderName = "experiences/" + savedExperience.getId();
+        // VectorDB에 체험 정보 인덱싱
+        indexExperience(savedExperience);
+
+        return  ExperienceResponseDto.from(savedExperience, host);
+    }
+
+    // 체험 이미지 업로드
+    @Transactional
+    public ExperienceResponseDto uploadExperienceImages(User user, Long experienceId, List<MultipartFile> images) {
+        // 1. 체험 정보 조회
+        Experience experience = experienceRepository.findById(experienceId)
+                .orElseThrow(() -> new CustomException(ErrorCode.EXPERIENCE_NOT_FOUND));
+
+        // 2. 권한 확인
+        if (user.getRole() != Role.HOST || !Objects.equals(experience.getHost().getId(), user.getHost().getId())) {
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        // 3. S3 업로드
+        String folderName = "experiences/" + experience.getId();
         List<String> imageUrls = images.stream()
                 .map(file -> s3UploadService.uploadFile(file, folderName))
                 .collect(Collectors.toList());
 
-        // 이미지 URL 리스트를 엔티티에 업데이트 및 DB 재저장
-        savedExperience.updateImageUrls(imageUrls);
-        Experience updatedExperience = experienceRepository.save(savedExperience);
+        // 4. 이미지 URL 업데이트 및 저장
+        experience.updateImageUrls(imageUrls);
+        Experience updatedExperience = experienceRepository.save(experience);
 
-        // VectorDB에 체험 정보 인덱싱
-        indexExperience(savedExperience);
-
-        return  ExperienceResponseDto.from(updatedExperience, host);
+        return ExperienceResponseDto.from(updatedExperience, updatedExperience.getHost());
     }
 
     // AI 기반 체험 추천
