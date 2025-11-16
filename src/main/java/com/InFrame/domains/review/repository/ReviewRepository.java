@@ -15,6 +15,12 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
+    //  ID로 찾는 메서드
+    Optional<Review> findByReservationId(Long reservationId);
+
+    // 객체로 찾는 메서드
+    Optional<Review> findByReservation(Reservation reservation);
+
     // 유저가 누른 호스트 좋아요 수
     long countByUser(User user);
 

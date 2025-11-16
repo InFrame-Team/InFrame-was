@@ -54,7 +54,7 @@ public class ReviewService {
         }
 
         // 4. 중복 리뷰 검증
-        if (reviewRepository.findByReservationId(reservationId).isPresent()) {
+        if (reviewRepository.findByReservation(reservation).isPresent()) { // reservationId 대신 reservation 객체 사용
             throw new CustomException(ErrorCode.REVIEW_ALREADY_EXISTS);
         }
 
