@@ -22,6 +22,9 @@ public interface HostLikeRepository extends JpaRepository<HostLike, Long> {
             "WHERE hl.user = :user")
     List<HostLike> findAllByUserWithHostAndUser(@Param("user") User user);
 
+    // 호스트가 받은 좋아요 수
+    long countByHost(Host host);
+
     // 유저가 누른 호스트 좋아요 수
     long countByUser(User user);
 }

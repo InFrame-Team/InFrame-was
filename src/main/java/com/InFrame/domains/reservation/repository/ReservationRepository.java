@@ -1,5 +1,6 @@
 package com.InFrame.domains.reservation.repository;
 
+import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.reservation.entity.Reservation;
 import com.InFrame.domains.reservation.entity.enums.ReservationStatus;
 import com.InFrame.domains.user.entity.User;
@@ -30,4 +31,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     // 유저가 예약한 내역 수
     long countByUser(User user);
+
+    // 특정 호스트의 모든 체험에 대해 특정 상태의 예약 수
+    long countByExperience_HostAndStatus(Host host, ReservationStatus status);
 }
