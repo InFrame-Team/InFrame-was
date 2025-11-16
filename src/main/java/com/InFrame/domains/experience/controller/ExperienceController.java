@@ -2,6 +2,7 @@ package com.InFrame.domains.experience.controller;
 
 import com.InFrame.domains.experience.controller.api.ExperienceApi;
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
+import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
 import com.InFrame.domains.experience.service.ExperienceService;
 import com.InFrame.security.userdetails.UserDetailsImpl;
@@ -57,6 +58,15 @@ public class ExperienceController implements ExperienceApi {
                 userDetails.getUser(), experienceId, images
         );
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @GetMapping("/{experienceId}")
+    public ResponseEntity<?> getExperienceDetail(
+            @PathVariable Long experienceId
+    ) {
+        ExperienceDetailResponseDto responseDto = experienceService.getExperienceDetail(experienceId);
+        return ResponseEntity.ok(responseDto);
     }
 
     @Override
