@@ -1,6 +1,7 @@
 package com.InFrame.domains.experience.controller.api;
 
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
+import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,6 +73,18 @@ public interface ExperienceApi {
             List<MultipartFile> images
     );
 
+    @Operation(summary = "체험 상세 조회", description = "체험 ID로 상세 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "상세 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ExperienceDetailResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "해당 체험을 찾을 수 없음",
+                    content = @Content(schema = @Schema(hidden = true)))
+    })
+    @GetMapping("/{experienceId}")
+    ResponseEntity<?> getExperienceDetail(
+            @Parameter(description = "조회할 체험 ID", required = true)
+            @PathVariable Long experienceId
+    );
 
     @Operation(summary = "AI 체험 추천", description = "검색 쿼리와 유사한 체험을 AI가 추천합니다.")
     @ApiResponse(responseCode = "200", description = "추천 목록 조회 성공")
