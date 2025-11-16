@@ -68,9 +68,6 @@ public class HostService {
     public String uploadCompanyLogo(User user, MultipartFile file) {
         // 1. 호스트 정보 가져오기
         Host host = user.getHost();
-        if (host == null) {
-            throw new CustomException(ErrorCode.HOST_NOT_FOUND);
-        }
 
         // 2. 기존 로고 이미지가 있다면 S3에서 삭제
         String oldLogoUrl = host.getCompanyLogoUrl();
