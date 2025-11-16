@@ -1,5 +1,6 @@
 package com.InFrame.domains.review.repository;
 
+import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.resdto.ReviewResponseDto;
@@ -17,6 +18,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 예약 ID로 리뷰가 이미 작성되었는지 확인
     Optional<Review> findByReservationId(Long reservationId);
+
+    // 좋아요 조회 기능용
+    @Query("SELECT r FROM Review r " +
+            "JOIN FETCH r.reservation res " +
+            "JOIN FETCH res.experience exp " +
+            "WHERE exp IN :experiences")
+    List<Review> findAllByExperienceInWithExperience(@Param("experiences") List<Experience> experiences);
 
     @Query("SELECT r FROM Review r " +
             "JOIN FETCH r.user u " + // DTO 변환 시 N+1 방지
