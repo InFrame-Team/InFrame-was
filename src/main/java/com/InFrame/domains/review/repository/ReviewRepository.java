@@ -2,6 +2,7 @@ package com.InFrame.domains.review.repository;
 
 import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.host.entity.Host;
+import com.InFrame.domains.reservation.entity.Reservation;
 import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.resdto.ReviewResponseDto;
 import com.InFrame.domains.user.entity.User;
@@ -14,6 +15,12 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
+    //  ID로 찾는 메서드
+    Optional<Review> findByReservationId(Long reservationId);
+
+    // 객체로 찾는 메서드
+    Optional<Review> findByReservation(Reservation reservation);
+
     // 유저가 누른 호스트 좋아요 수
     long countByUser(User user);
 
@@ -21,7 +28,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     long countByReservation_Experience_Host(Host host);
 
     // 예약 ID로 리뷰가 이미 작성되었는지 확인
-    Optional<Review> findByReservationId(Long reservationId);
+    @Query("SELECT r FROM Review r WHERE r.reservation IN :reservations")
+    List<Review> findAllByReservationIn(@Param("reservations") List<Reservation> reservations);
 
     // 좋아요 조회 기능용
     @Query("SELECT r FROM Review r " +
