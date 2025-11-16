@@ -12,6 +12,9 @@ import com.InFrame.domains.host.repository.HostRepository;
 import com.InFrame.domains.host.reqdto.HostRequestDto;
 import com.InFrame.domains.host.resdto.HostMapResponseDto;
 import com.InFrame.domains.host.resdto.MyHostInfoResponseDto;
+import com.InFrame.domains.like.repository.HostLikeRepository;
+import com.InFrame.domains.reservation.entity.enums.ReservationStatus;
+import com.InFrame.domains.reservation.repository.ReservationRepository;
 import com.InFrame.domains.review.repository.ReviewRepository;
 import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.entity.User;
@@ -35,6 +38,8 @@ public class HostService {
     private final S3UploadService s3UploadService;
     private final ReviewRepository reviewRepository;
     private final ExperienceRepository experienceRepository;
+    private final HostLikeRepository hostLikeRepository;
+    private final ReservationRepository reservationRepository;
 
     // 호스트로 변경
     public void changeToHost(User user, HostRequestDto hostRequestDto) {
@@ -104,18 +109,24 @@ public class HostService {
                 .collect(Collectors.toList());
     }
 
-    // 호스트 자신 정보 조회
+    // 호스트 마이페이지 정보 조회
     @Transactional(readOnly = true)
     public MyHostInfoResponseDto getMyHostInfo(User user) {
-        // 1. 호스트 권한 확인
-        if (user.getRole() != Role.HOST) {
-            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
-        }
-        // 2. 호스트 정보 가져오기
-        Host host = user.getHost();
-        if (host == null) {
-            throw new CustomException(ErrorCode.HOST_NOT_FOUND);
-        }
-        return MyHostInfoResponseDto.from(host);
+        Host host = hostRepository.findByUser(user)
+                .orElseThrow(() -> new CustomException(ErrorCode.HOST_INFO_NOT_FOUND));
+
+        // 1. 받은 좋아요 수
+        long likeCount = hostLikeRepository.countByHost(host);
+
+        // 2. 받은 리뷰 수
+        long reviewCount = reviewRepository.countByReservation_Experience_Host(host);
+
+        // 3. 예약 완료 수
+        long confirmedCount = reservationRepository.countByExperience_HostAndStatus(host, ReservationStatus.RESERVED);
+
+        // 4. 체험 완료 수
+        long completedCount = reservationRepository.countByExperience_HostAndStatus(host, ReservationStatus.COMPLETED);
+
+        return MyHostInfoResponseDto.from(host, user, likeCount, reviewCount, confirmedCount, completedCount);
     }
 }
