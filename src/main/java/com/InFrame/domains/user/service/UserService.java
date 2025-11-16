@@ -7,6 +7,7 @@ import com.InFrame.domains.like.repository.ExperienceLikeRepository;
 import com.InFrame.domains.like.repository.HostLikeRepository;
 import com.InFrame.domains.reservation.repository.ReservationRepository;
 import com.InFrame.domains.review.repository.ReviewRepository;
+import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.entity.User;
 import com.InFrame.domains.user.repository.UserRepository;
 import com.InFrame.domains.user.resdto.UserInfoResponseDto;
@@ -59,6 +60,20 @@ public class UserService {
                 experienceLikeCount,
                 reviewCount
         );
+    }
+
+    // 유저 역할 변경 (호스트 <-> 유저)
+    @Transactional
+    public void updateUserRole(User user, Role newRole) {
+        // 호스트로 변경 시, 기존에 호스트 정보가 등록된 사람인지 확인
+        if (newRole == Role.HOST) {
+            if (user.getHost() == null) {
+                throw new CustomException(ErrorCode.HOST_INFO_NOT_FOUND);
+            }
+        }
+
+        user.updateRole(newRole); //
+        userRepository.save(user);
     }
 
     // 유저 삭제
