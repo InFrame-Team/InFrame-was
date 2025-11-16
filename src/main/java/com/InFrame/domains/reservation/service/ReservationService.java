@@ -10,6 +10,7 @@ import com.InFrame.domains.reservation.reqdto.ReservationRequestDto;
 import com.InFrame.domains.reservation.resdto.AvailableSlotDto;
 import com.InFrame.domains.reservation.resdto.MyReservationResponseDto;
 import com.InFrame.domains.reservation.resdto.ReservationResponseDto;
+import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.repository.ReviewRepository;
 import com.InFrame.domains.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -108,10 +109,17 @@ public class ReservationService {
     public List<MyReservationResponseDto> getMyReservations(User user) {
         List<Reservation> reservations = reservationRepository.findAllByUserOrderByReservedStartTimeDesc(user);
 
+        // 이 예약 목록에 대해 이미 작성된 리뷰가 있는지 한 번에 조회
+        List<Review> reviews = reviewRepository.findAllByReservationIn(reservations);
+
+        Set<Long> reviewedReservationIds = reviews.stream()
+                .map(review -> review.getReservation().getId())
+                .collect(Collectors.toSet());
+
+        // DTO로 변환
         return reservations.stream()
                 .map(reservation -> {
-                    // 각 예약별로 리뷰 작성 여부 확인
-                    boolean reviewWritten = reviewRepository.findByReservationId(reservation.getId()).isPresent();
+                    boolean reviewWritten = reviewedReservationIds.contains(reservation.getId());
                     return MyReservationResponseDto.from(reservation, reviewWritten);
                 })
                 .collect(Collectors.toList());
