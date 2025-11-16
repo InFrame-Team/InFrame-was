@@ -1,6 +1,7 @@
 package com.InFrame.domains.user.controller;
 
 import com.InFrame.domains.user.controller.api.UserApi;
+import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.resdto.UserInfoResponseDto;
 import com.InFrame.domains.user.service.UserService;
 import com.InFrame.security.userdetails.UserDetailsImpl;
@@ -36,6 +37,16 @@ public class UserController implements UserApi {
     @DeleteMapping("/me")
     public ResponseEntity<String> deleteMyAccount(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deleteUser(userDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @PostMapping("/me/role")
+    public ResponseEntity<Void> updateMyRole(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam("newRole") Role newRole) {
+
+        userService.updateUserRole(userDetails.getUser(), newRole);
         return ResponseEntity.ok().build();
     }
 

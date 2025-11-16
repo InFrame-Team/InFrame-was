@@ -1,5 +1,6 @@
 package com.InFrame.domains.user.controller.api;
 
+import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.resdto.UserInfoResponseDto;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +39,36 @@ public interface UserApi {
     ResponseEntity<?> getMyInfo(
             @Parameter(description = "JWT 토큰 기반 유저 (자동 주입)", hidden = true)
             @AuthenticationPrincipal UserDetailsImpl userDetails
+    );
+
+    @Operation(summary = "내 역할 변경 (유저/호스트 전환)", description = "유저(참여자) ↔ 호스트 역할을 전환합니다. (호스트 정보가 등록된 유저만 가능)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "역할 변경 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 실패",
+                    content = @Content(mediaType = "application/json", examples = {
+                            @ExampleObject(value = """
+                                    {
+                                        "status" : 401,
+                                        "message" : "토큰이 없거나 만료되었습니다."
+                                    }
+                                    """)
+                    })),
+            @ApiResponse(responseCode = "404", description = "호스트 정보 없음 (HOST 변경 시도 시)",
+                    content = @Content(mediaType = "application/json", examples = {
+                            @ExampleObject(value = """
+                                    {
+                                        "status" : 404,
+                                        "message" : "호스트 정보가 등록되어 있지 않습니다."
+                                    }
+                                    """)
+                    }))
+    })
+    ResponseEntity<Void> updateMyRole(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+
+            @Parameter(description = "변경할 역할 (USER 또는 HOST)", required = true, example = "USER")
+            @RequestParam("newRole") Role newRole
     );
 
     @Operation(summary = "회원탈퇴(삭제)", description = "회원탈퇴를 하는 기능입니다.")
