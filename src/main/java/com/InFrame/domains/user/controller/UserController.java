@@ -28,15 +28,8 @@ public class UserController implements UserApi {
     @Override
     @GetMapping("/me")
     public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserInfoResponseDto  userInfo = UserInfoResponseDto.from(userDetails.getUser());
-        return ResponseEntity.ok(userInfo);
-    }
-
-    @Override
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserInfoResponseDto> getUserInfoById(@PathVariable Long userId) {
-        UserInfoResponseDto userInfo = userService.info(userId);
-        return ResponseEntity.ok(userInfo);
+        UserInfoResponseDto myPageInfo = userService.getMyPageInfo(userDetails.getUser());
+        return ResponseEntity.ok(myPageInfo);
     }
 
     @Override

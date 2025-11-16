@@ -4,6 +4,7 @@ import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.resdto.ReviewResponseDto;
+import com.InFrame.domains.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +13,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
+    // 유저가 누른 호스트 좋아요 수
+    long countByUser(User user);
 
     // 호스트의 리뷰 개수를 반환
     long countByReservation_Experience_Host(Host host);

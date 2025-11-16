@@ -3,6 +3,10 @@ package com.InFrame.domains.user.service;
 import com.InFrame.common.exception.CustomException;
 import com.InFrame.common.exception.error.ErrorCode;
 import com.InFrame.common.service.S3UploadService;
+import com.InFrame.domains.like.repository.ExperienceLikeRepository;
+import com.InFrame.domains.like.repository.HostLikeRepository;
+import com.InFrame.domains.reservation.repository.ReservationRepository;
+import com.InFrame.domains.review.repository.ReviewRepository;
 import com.InFrame.domains.user.entity.User;
 import com.InFrame.domains.user.repository.UserRepository;
 import com.InFrame.domains.user.resdto.UserInfoResponseDto;
@@ -16,6 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
     private final UserRepository userRepository;
     private final S3UploadService s3UploadService;
+    private final ReservationRepository reservationRepository;
+    private final HostLikeRepository hostLikeRepository;
+    private final ExperienceLikeRepository experienceLikeRepository;
+    private final ReviewRepository reviewRepository;
 
     // 프로필 이미지 등록 및 수정
     @Transactional
@@ -36,13 +44,21 @@ public class UserService {
         return newImageUrl;
     }
 
-    // 회원정보 조회
+    // 마이페이지 정보 조회
     @Transactional(readOnly = true)
-    public UserInfoResponseDto info(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public UserInfoResponseDto getMyPageInfo(User user) {
+        long reservationCount = reservationRepository.countByUser(user);
+        long hostLikeCount = hostLikeRepository.countByUser(user);
+        long experienceLikeCount = experienceLikeRepository.countByUser(user);
+        long reviewCount = reviewRepository.countByUser(user);
 
-        return UserInfoResponseDto.from(user);
+        return UserInfoResponseDto.from(
+                user,
+                reservationCount,
+                hostLikeCount,
+                experienceLikeCount,
+                reviewCount
+        );
     }
 
     // 유저 삭제
