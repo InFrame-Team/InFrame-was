@@ -65,11 +65,10 @@ public class HostController implements HostApi {
 
     @Override
     @GetMapping("/me")
-    // [수정]
     public ResponseEntity<?> getMyHostInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        MyHostInfoResponseDto hostInfo = hostService.getMyHostInfo(userDetails.getUser());
-        return ResponseEntity.ok(hostInfo);
+        MyHostInfoResponseDto myHostInfo = hostService.getMyHostInfo(userDetails.getUser());
+        return ResponseEntity.ok(myHostInfo);
     }
 }

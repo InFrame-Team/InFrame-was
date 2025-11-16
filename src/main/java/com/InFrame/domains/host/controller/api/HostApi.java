@@ -109,14 +109,13 @@ public interface HostApi {
     })
     ResponseEntity<?> getAllHostsForMap();
 
-    @Operation(summary = "내 호스트 정보 조회", description = "인증된 호스트의 상세 정보를 조회합니다.")
+    @Operation(summary = "내 호스트 정보 조회 (마이페이지)", description = "내 호스트 정보와 통계(좋아요, 리뷰, 예약 건수)를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = MyHostInfoResponseDto.class))),
             @ApiResponse(responseCode = "401", description = "인증 실패"),
-            @ApiResponse(responseCode = "403", description = "호스트 권한이 없습니다."),
-            @ApiResponse(responseCode = "404", description = "호스트 정보를 찾을 수 없습니다.")
+            @ApiResponse(responseCode = "404", description = "호스트 정보를 찾을 수 없음")
     })
     ResponseEntity<?> getMyHostInfo(
             @Parameter(hidden = true)
