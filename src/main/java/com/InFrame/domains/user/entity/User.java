@@ -1,6 +1,8 @@
 package com.InFrame.domains.user.entity;
 
 import com.InFrame.domains.host.entity.Host;
+import com.InFrame.domains.like.entity.ExperienceLike;
+import com.InFrame.domains.like.entity.HostLike;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,10 +11,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -49,6 +55,12 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Host host;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ExperienceLike> experienceLikes = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<HostLike> hostLikes = new HashSet<>();
 
     public void updateRole(Role role) {
         this.role = role;
