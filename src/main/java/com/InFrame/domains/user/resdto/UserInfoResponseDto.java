@@ -9,16 +9,25 @@ public record UserInfoResponseDto(
         String nickname,
         String name,
         String profileImageUrl,
-        Role role
+        Role role,
+        long reservationCount,
+        long hostLikeCount,
+        long experienceLikeCount,
+        long reviewCount
 ) {
-    public static UserInfoResponseDto from(User user) {
+    public static UserInfoResponseDto from(User user, long reservationCount, long hostLikeCount, long experienceLikeCount, long reviewCount) {
         return new UserInfoResponseDto(
                 user.getId(),
                 user.getEmail(),
                 user.getNickname(),
                 user.getName(),
                 user.getProfileImageUrl(),
-                user.getRole()
+                user.getRole(),
+                reservationCount,
+                hostLikeCount,
+                experienceLikeCount,
+                reviewCount
+
         );
     }
 }
