@@ -6,8 +6,11 @@ import com.InFrame.common.service.S3UploadService;
 import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.experience.repository.ExperienceRepository;
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
+import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
 import com.InFrame.domains.host.entity.Host;
+import com.InFrame.domains.review.entity.Review;
+import com.InFrame.domains.review.repository.ReviewRepository;
 import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ExperienceService {
     private final ExperienceRepository experienceRepository;
+    private final ReviewRepository reviewRepository;
     private final VectorStore vectorStore;
     private final S3UploadService s3UploadService;
 
@@ -78,6 +82,22 @@ public class ExperienceService {
         Experience updatedExperience = experienceRepository.save(experience);
 
         return ExperienceResponseDto.from(updatedExperience, updatedExperience.getHost());
+    }
+
+    // 체험 상세 조회
+    @Transactional(readOnly = true)
+    public ExperienceDetailResponseDto getExperienceDetail(Long experienceId) {
+        // 1. 체험(Experience) 조회
+        Experience experience = experienceRepository.findById(experienceId)
+                .orElseThrow(() -> new CustomException(ErrorCode.EXPERIENCE_NOT_FOUND));
+
+        // 2. 호스트(Host) 정보 조회
+        Host host = experience.getHost();
+
+        // 3. 해당 체험의 리뷰(Review) 목록 조회
+        List<Review> reviews = reviewRepository.findAllByExperienceId(experienceId);
+
+        return ExperienceDetailResponseDto.from(experience, host, reviews);
     }
 
     // AI 기반 체험 추천
