@@ -27,4 +27,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     // 유저가 예약한 내역 리스트 조회
     List<Reservation> findAllByUserOrderByReservedStartTimeDesc(User user);
+
+    // 유저가 예약한 내역 수
+    long countByUser(User user);
 }

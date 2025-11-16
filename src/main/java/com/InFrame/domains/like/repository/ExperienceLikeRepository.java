@@ -23,4 +23,7 @@ public interface ExperienceLikeRepository extends JpaRepository<ExperienceLike, 
             "JOIN FETCH h.user " +
             "WHERE el.user = :user")
     List<ExperienceLike> findAllByUserWithExperienceAndHost(@Param("user") User user);
+
+    // 유저가 누른 호스트 좋아요 수
+    long countByUser(User user);
 }

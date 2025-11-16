@@ -21,4 +21,7 @@ public interface HostLikeRepository extends JpaRepository<HostLike, Long> {
             "LEFT JOIN FETCH h.user " + // Host의 User 정보까지 한 번에 가져옴
             "WHERE hl.user = :user")
     List<HostLike> findAllByUserWithHostAndUser(@Param("user") User user);
+
+    // 유저가 누른 호스트 좋아요 수
+    long countByUser(User user);
 }
