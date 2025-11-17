@@ -16,7 +16,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     // 특정 체험에 대해 특정 날짜에 이미 예약된 시작 시간 목록을 조회
     @Query("SELECT r.reservedStartTime FROM Reservation r " +
             "WHERE r.experience.id = :experienceId " +
-            "AND r.reservedStartTime BETWEEN :startOfDay AND :endOfDay")
+            "AND r.reservedStartTime BETWEEN :startOfDay AND :endOfDay " +
+            "AND r.status != com.InFrame.domains.reservation.entity.enums.ReservationStatus.CANCELLED") // [수정]
     List<LocalDateTime> findReservedStartTimesByExperienceIdAndDate(
             @Param("experienceId") Long experienceId,
             @Param("startOfDay") LocalDateTime startOfDay,
@@ -32,6 +33,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "ORDER BY r.reservedStartTime DESC")
     List<Reservation> findAllByUserOrderByReservedStartTimeDesc(@Param("user") User user);
 
+    // 특정 체험에 대해 특정 시작 시간에 유효한 예약이 존재하는지 확인
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM Reservation r " +
+            "WHERE r.experience.id = :experienceId " +
+            "AND r.reservedStartTime = :startTime " +
+            "AND r.status != com.InFrame.domains.reservation.entity.enums.ReservationStatus.CANCELLED")
+    boolean existsValidReservationAtTime(
+            @Param("experienceId") Long experienceId,
+            @Param("startTime") LocalDateTime startTime
+    );
 
     // 예약 목록으로 리뷰 목록을 한 번에 조회
     @Query("SELECT r FROM Review r WHERE r.reservation IN :reservations")
