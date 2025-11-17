@@ -35,6 +35,7 @@ public enum ErrorCode {
     INVALID_RESERVATION_TIME(400, "선택한 시간은 예약 가능한 시간이 아닙니다."),
     RESERVATION_CAPACITY_EXCEEDED(400, "최대 예약 가능 인원을 초과했습니다."),
     RESERVATION_NOT_FOUND(404, "해당 예약을 찾을 수 없습니다."),
+    RESERVATION_NOT_CANCELLABLE(409, "예약 취소가 불가능한 상태입니다."),
 
     // 이미지 관련 오류
     FILE_IS_EMPTY(404, "파일이 비어있습니다."),
