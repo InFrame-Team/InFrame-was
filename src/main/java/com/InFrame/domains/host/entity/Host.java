@@ -1,5 +1,6 @@
 package com.InFrame.domains.host.entity;
 
+import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.host.entity.enums.Category;
 import com.InFrame.domains.like.entity.HostLike;
 import com.InFrame.domains.user.entity.User;
@@ -88,6 +89,9 @@ public class Host {
 
     @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<HostLike> likes = new HashSet<>();
+
+    @OneToMany(mappedBy = "host", fetch = FetchType.LAZY)
+    private Set<Experience> experiences = new HashSet<>();
 
     @Builder
     public Host(String businessName, String businessPhoneNumber, Category category,

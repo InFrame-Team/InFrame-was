@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -94,17 +95,26 @@ public class HostService {
     @Transactional(readOnly = true)
     public List<HostMapResponseDto> getAllHostsForMap() {
         // 1. 체험이 있는 호스트만 조회
-        List<Host> hostsWithExperiences = experienceRepository.findDistinctHostsWithExperiences();
+        List<Host> hostsWithExperiences = hostRepository.findAllWithExperiencesForMap();
 
         // 2. 호스트 목록으로 DTO 생성
         return hostsWithExperiences.stream()
                 .map(host -> {
                     long reviewCount = reviewRepository.countByReservation_Experience_Host(host);
 
-                    DetailField detailField = experienceRepository.findTopByHost(host)
+                    DetailField detailField = host.getExperiences().stream()
+                            .findFirst()
                             .get()
                             .getDetailField();
-                    return HostMapResponseDto.from(host, reviewCount, detailField);
+
+                    // 3. 최저가 계산 로직
+                    OptionalInt minPriceOpt = host.getExperiences().stream()
+                            .mapToInt(Experience::getPrice)
+                            .min();
+
+                    Integer lowestPrice = minPriceOpt.getAsInt();
+
+                    return HostMapResponseDto.from(host, reviewCount, detailField, lowestPrice);
                 })
                 .collect(Collectors.toList());
     }
