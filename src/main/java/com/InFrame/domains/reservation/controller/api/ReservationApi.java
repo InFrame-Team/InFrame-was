@@ -166,4 +166,20 @@ public interface ReservationApi {
             @Parameter(hidden = true)
             @AuthenticationPrincipal UserDetailsImpl userDetails
     );
+
+    @Operation(summary = "예약 취소", description = "로그인한 사용자가 자신의 예약을 취소합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "예약 취소 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "403", description = "예약 취소 권한 없음 (본인 예약 아님)"),
+            @ApiResponse(responseCode = "404", description = "예약을 찾을 수 없음"),
+            @ApiResponse(responseCode = "409", description = "예약 취소가 불가능한 상태 (예: 이미 완료됨)")
+    })
+    ResponseEntity<Void> cancelReservation(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+
+            @Parameter(description = "취소할 예약 ID", required = true)
+            @PathVariable Long reservationId
+    );
 }
