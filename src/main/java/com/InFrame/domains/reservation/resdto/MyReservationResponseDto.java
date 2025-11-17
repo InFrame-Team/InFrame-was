@@ -29,6 +29,9 @@ public record MyReservationResponseDto(
         @Schema(description = "체험 제목")
         String experienceTitle,
 
+        @Schema(description = "체험 대표 이미지(썸네일)")
+        String experienceThumbnailUrl,
+
         @Schema(description = "예약된 시작 시간")
         LocalDateTime reservedStartTime,
 
@@ -58,6 +61,7 @@ public record MyReservationResponseDto(
                 hostUser.getName(),
                 hostUser.getProfileImageUrl(),
                 experience.getTitle(),
+                imageUrl,
                 reservation.getReservedStartTime(),
                 reservation.getTotalPrice(),
                 reservation.getCreatedAt(),
