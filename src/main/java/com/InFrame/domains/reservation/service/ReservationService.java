@@ -5,6 +5,7 @@ import com.InFrame.common.exception.error.ErrorCode;
 import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.experience.repository.ExperienceRepository;
 import com.InFrame.domains.reservation.entity.Reservation;
+import com.InFrame.domains.reservation.entity.enums.ReservationStatus;
 import com.InFrame.domains.reservation.repository.ReservationRepository;
 import com.InFrame.domains.reservation.reqdto.ReservationRequestDto;
 import com.InFrame.domains.reservation.resdto.AvailableSlotDto;
@@ -77,7 +78,7 @@ public class ReservationService {
         // 3. 중복 예약 확인 (DB 쿼리)
         LocalDateTime requestedStartTime = LocalDateTime.of(requestDto.reservationDate(), requestDto.startTime());
 
-        if (reservationRepository.existsByExperienceIdAndReservedStartTime(requestDto.experienceId(), requestedStartTime)) {
+        if (reservationRepository.existsValidReservationAtTime(requestDto.experienceId(), requestedStartTime)) {
             throw new CustomException(ErrorCode.RESERVATION_SLOT_NOT_AVAILABLE);
         }
 
@@ -123,6 +124,26 @@ public class ReservationService {
                     return MyReservationResponseDto.from(reservation, reviewWritten);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void cancelReservation(User user, Long reservationId) {
+        // 1. 예약 정보 조회
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        // 2. 예약 취소 권한 확인
+        if (!reservation.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        // 3. 예약 상태 확인
+        if (reservation.getStatus() != ReservationStatus.RESERVED) {
+            throw new CustomException(ErrorCode.RESERVATION_NOT_CANCELLABLE);
+        }
+
+        // 4. 예약 상태 변경
+        reservation.updateStatus(ReservationStatus.CANCELLED);
     }
 
     // 예약 요청 유효성 검증
