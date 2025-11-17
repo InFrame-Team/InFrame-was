@@ -28,9 +28,11 @@ public record HostMapResponseDto(
         @Schema(description = "업체 로고 이미지 URL")
         String companyLogoUrl,
         @Schema(description = "호스트가 받은 총 리뷰 수")
-        long reviewCount
+        long reviewCount,
+        @Schema(description = "해당 호스트의 체험 중 최저가", nullable = true)
+        Integer lowestPrice
 ) {
-    public static HostMapResponseDto from(Host host, long reviewCount, DetailField detailField) {
+    public static HostMapResponseDto from(Host host, long reviewCount, DetailField detailField, Integer lowestPrice) {
         return new HostMapResponseDto(
                 host.getId(),
                 host.getBusinessName(),
@@ -42,7 +44,8 @@ public record HostMapResponseDto(
                 host.getLongitude(),
                 host.getAddressBase(),
                 host.getCompanyLogoUrl(),
-                reviewCount
+                reviewCount,
+                lowestPrice
         );
     }
 }
