@@ -20,7 +20,8 @@ public record ExperienceResponseDto (
         int maxCapacityPerSlot,
         List<String> imageUrls,
         Set<DayOfWeek> availableDaysOfWeek,
-        Set<LocalTime> availableTimes
+        Set<LocalTime> availableTimes,
+        String caution
 
 ) {
     public static  ExperienceResponseDto from(Experience experience, Host host) {
@@ -34,7 +35,8 @@ public record ExperienceResponseDto (
                 experience.getMaxCapacityPerSlot(),
                 experience.getImageUrls(),
                 experience.getAvailableDaysOfWeek(),
-                experience.getAvailableTimes()
+                experience.getAvailableTimes(),
+                experience.getCaution()
         );
     }
 }

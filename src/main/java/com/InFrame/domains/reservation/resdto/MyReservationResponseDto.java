@@ -32,11 +32,17 @@ public record MyReservationResponseDto(
         @Schema(description = "체험 대표 이미지(썸네일)")
         String experienceThumbnailUrl,
 
+        @Schema(description = "체험 유의사항")
+        String caution,
+
         @Schema(description = "예약된 시작 시간")
         LocalDateTime reservedStartTime,
 
         @Schema(description = "총 가격")
         int totalPrice,
+
+        @Schema(description = "총 예약 인원")
+        int totalParticipants,
 
         @Schema(description = "예약 생성 시간")
         LocalDateTime createdAt,
@@ -54,6 +60,8 @@ public record MyReservationResponseDto(
             imageUrl = experience.getImageUrls().stream().findFirst().orElse(null);
         }
 
+        int TotalParticipants = reservation.getNumAdults() + reservation.getNumChildren();
+
         return new MyReservationResponseDto(
                 reservation.getId(),
                 experience.getId(),
@@ -62,8 +70,10 @@ public record MyReservationResponseDto(
                 hostUser.getProfileImageUrl(),
                 experience.getTitle(),
                 imageUrl,
+                experience.getCaution(),
                 reservation.getReservedStartTime(),
                 reservation.getTotalPrice(),
+                TotalParticipants,
                 reservation.getCreatedAt(),
                 reviewWritten
         );

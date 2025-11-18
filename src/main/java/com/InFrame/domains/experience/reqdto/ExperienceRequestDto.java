@@ -54,7 +54,10 @@ public record ExperienceRequestDto (
 
         @NotEmpty(message = "예약 가능 시간은 최소 하나 이상 선택해야 합니다.")
         @Schema(description = "예약 가능한 시작 시간 목록 (HH:mm 형식)", example = "[\"09:00\", \"11:00\", \"14:00\"]")
-        Set<LocalTime> availableTimes
+        Set<LocalTime> availableTimes,
+
+        @Schema(description = "체험 유의사항", example = "땅콩 알레르기가 있으신 분은 주의해주세요.")
+        String caution
 ){
     public Experience toEntity(Host host) {
         return Experience.builder()
@@ -70,6 +73,7 @@ public record ExperienceRequestDto (
                 .maxCapacityPerSlot(maxCapacityPerSlot)
                 .availableDaysOfWeek(availableDaysOfWeek)
                 .availableTimes(availableTimes)
+                .caution(caution)
                 .build();
     }
 }
