@@ -9,6 +9,7 @@ import com.InFrame.domains.experience.entity.enums.DetailField;
 import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.host.repository.HostRepository;
 import com.InFrame.domains.host.reqdto.HostRequestDto;
+import com.InFrame.domains.host.resdto.HostDetailResponseDto;
 import com.InFrame.domains.host.resdto.HostMapResponseDto;
 import com.InFrame.domains.host.resdto.MyHostInfoResponseDto;
 import com.InFrame.domains.host.resdto.TopHostResponseDto;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -174,6 +174,30 @@ public class HostService {
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    // 특정 호스트 상세 정보 조회
+    @Transactional(readOnly = true)
+    public HostDetailResponseDto getHostDetail(Long hostId) {
+        // 1. Host와 User 정보 조회 (Eager fetch)
+        Host host = hostRepository.findByIdWithUser(hostId)
+                .orElseThrow(() -> new CustomException(ErrorCode.HOST_INFO_NOT_FOUND));
+
+        User user = host.getUser();
+
+        // 2. 리뷰 통계 정보 조회
+        Object[] reviewSummary = reviewRepository.findReviewSummaryByHostId(hostId);
+
+        Long reviewCount = (Long) reviewSummary[0];
+        Double averageRating = (Double) reviewSummary[1];
+
+        // 3. DTO로 매핑
+        return HostDetailResponseDto.from(
+                user,
+                host,
+                reviewCount != null ? reviewCount : 0L,
+                averageRating != null ? averageRating : 0.0
+        );
     }
 
 }

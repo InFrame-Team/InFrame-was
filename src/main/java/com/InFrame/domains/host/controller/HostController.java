@@ -2,6 +2,7 @@ package com.InFrame.domains.host.controller;
 
 import com.InFrame.domains.host.controller.api.HostApi;
 import com.InFrame.domains.host.reqdto.HostRequestDto;
+import com.InFrame.domains.host.resdto.HostDetailResponseDto;
 import com.InFrame.domains.host.resdto.HostMapResponseDto;
 import com.InFrame.domains.host.resdto.MyHostInfoResponseDto;
 import com.InFrame.domains.host.resdto.TopHostResponseDto;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,5 +80,12 @@ public class HostController implements HostApi {
     public ResponseEntity<?> getTop5Hosts() {
         List<TopHostResponseDto> topHosts = hostService.getTop5HostsByReviews();
         return ResponseEntity.ok(topHosts);
+    }
+
+    @Override
+    @GetMapping("/{hostId}")
+    public ResponseEntity<?> getHostDetail(@PathVariable Long hostId) {
+        HostDetailResponseDto response = hostService.getHostDetail(hostId);
+        return ResponseEntity.ok(response);
     }
 }

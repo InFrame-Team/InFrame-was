@@ -1,6 +1,7 @@
 package com.InFrame.domains.host.controller.api;
 
 import com.InFrame.domains.host.reqdto.HostRequestDto;
+import com.InFrame.domains.host.resdto.HostDetailResponseDto;
 import com.InFrame.domains.host.resdto.HostMapResponseDto;
 import com.InFrame.domains.host.resdto.MyHostInfoResponseDto;
 import com.InFrame.domains.host.resdto.TopHostResponseDto;
@@ -18,6 +19,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -130,4 +132,16 @@ public interface HostApi {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TopHostResponseDto.class))))
     })
     ResponseEntity<?> getTop5Hosts();
+
+    @Operation(summary = "특정 호스트 상세 정보 조회", description = "호스트 ID를 기준으로 상세 정보, 평점 및 후기 수를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = HostDetailResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "호스트 정보를 찾을 수 없음")
+    })
+    ResponseEntity<?> getHostDetail(
+            @Parameter(description = "조회할 호스트 ID", required = true)
+            @PathVariable Long hostId
+    );
 }
