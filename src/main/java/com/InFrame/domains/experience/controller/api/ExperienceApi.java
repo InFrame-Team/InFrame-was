@@ -3,6 +3,7 @@ package com.InFrame.domains.experience.controller.api;
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
 import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
+import com.InFrame.domains.experience.resdto.ExperienceSummaryResponseDto;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -96,4 +97,14 @@ public interface ExperienceApi {
             @RequestParam(value = "topK", defaultValue = "5") int topK
     );
 
+    @Operation(summary = "호스트의 모든 체험 목록 조회", description = "호스트가 등록한 모든 체험의 요약 정보를 조회합니다. (인증 필요)")
+    @ApiResponse(responseCode = "200", description = "체험 목록 조회 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ExperienceSummaryResponseDto.class))))
+    @ApiResponse(responseCode = "403", description = "권한 없음 (호스트가 아닌 사용자)",
+            content = @Content(schema = @Schema(hidden = true)))
+    @GetMapping("/my-list")
+    ResponseEntity<?> getExperiencesByHost(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    );
 }

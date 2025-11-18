@@ -28,6 +28,19 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 호스트의 리뷰 개수를 반환
     long countByReservation_Experience_Host(Host host);
 
+    // 특정 호스트의 모든 체험에 대한 리뷰 요약 정보 (체험 ID, 평균 평점, 리뷰 개수) 일괄 조회
+    @Query("SELECT r.reservation.experience.id, AVG(r.rating), COUNT(r) " +
+            "FROM Review r " +
+            "WHERE r.reservation.experience.host.id = :hostId " +
+            "GROUP BY r.reservation.experience.id")
+    List<Object[]> findExperienceReviewSummaryByHostId(@Param("hostId") Long hostId);
+
+    // 특정 호스트의 리뷰 총 개수와 평균 평점을 조회
+    @Query("SELECT COUNT(r), AVG(r.rating) " +
+            "FROM Review r " +
+            "WHERE r.reservation.experience.host.id = :hostId")
+    Object[] findReviewSummaryByHostId(@Param("hostId") Long hostId);
+
     // 예약 ID로 리뷰가 이미 작성되었는지 확인
     @Query("SELECT r FROM Review r WHERE r.reservation IN :reservations")
     List<Review> findAllByReservationIn(@Param("reservations") List<Reservation> reservations);

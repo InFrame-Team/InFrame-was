@@ -46,10 +46,10 @@ public class Host {
     @Column(nullable = false)
     private String businessPhoneNumber; // 고객센터 전화번호
 
-    @Column
+    @Column(nullable = false)
     private String businessEmail; // 고객센터 이메일
 
-    @Column
+    @Column(nullable = false)
     private String kakaoAddress; // 카카오톡 채널 주소
 
     @Column(length = 25)
