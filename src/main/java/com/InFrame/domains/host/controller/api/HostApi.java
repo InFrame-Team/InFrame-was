@@ -3,6 +3,7 @@ package com.InFrame.domains.host.controller.api;
 import com.InFrame.domains.host.reqdto.HostRequestDto;
 import com.InFrame.domains.host.resdto.HostMapResponseDto;
 import com.InFrame.domains.host.resdto.MyHostInfoResponseDto;
+import com.InFrame.domains.host.resdto.TopHostResponseDto;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -121,4 +122,12 @@ public interface HostApi {
             @Parameter(hidden = true)
             @AuthenticationPrincipal UserDetailsImpl userDetails
     );
+
+    @Operation(summary = "후기 많은 호스트 Top 5 조회",
+            description = "후기 개수를 기준으로 Top 5 호스트를 조회합니다. (평균 평점 포함)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TopHostResponseDto.class))))
+    })
+    ResponseEntity<?> getTop5Hosts();
 }
