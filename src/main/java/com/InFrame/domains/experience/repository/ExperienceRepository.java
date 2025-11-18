@@ -13,6 +13,9 @@ public interface ExperienceRepository extends JpaRepository<Experience, Long> {
     // 호스트가 등록한 모든 체험 찾기
     List<Experience> findAllByHost(Host host);
 
+    @Query("SELECT e FROM Experience e LEFT JOIN FETCH e.imageUrls WHERE e.host.id = :hostId")
+    List<Experience> findAllByHostIdWithImages(@Param("hostId") Long hostId);
+
     // 호스트의 체험 중 첫 번째 데이터를 가져옴
     Optional<Experience> findTopByHost(Host host);
 

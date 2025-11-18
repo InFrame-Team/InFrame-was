@@ -4,6 +4,7 @@ import com.InFrame.domains.experience.controller.api.ExperienceApi;
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
 import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
+import com.InFrame.domains.experience.resdto.ExperienceSummaryResponseDto;
 import com.InFrame.domains.experience.service.ExperienceService;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,5 +78,14 @@ public class ExperienceController implements ExperienceApi {
     ) {
         List<ExperienceResponseDto> recommendations = experienceService.recommendExperiences(query, topK);
         return ResponseEntity.ok(recommendations);
+    }
+
+    @Override
+    @GetMapping("/my-list")
+    public ResponseEntity<?> getExperiencesByHost(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        List<ExperienceSummaryResponseDto> response = experienceService.getExperiencesByHostUser(userDetails.getUser());
+        return ResponseEntity.ok(response);
     }
 }

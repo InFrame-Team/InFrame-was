@@ -8,6 +8,7 @@ import com.InFrame.domains.experience.repository.ExperienceRepository;
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
 import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
+import com.InFrame.domains.experience.resdto.ExperienceSummaryResponseDto;
 import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.repository.ReviewRepository;
@@ -184,5 +185,60 @@ public class ExperienceService {
         if (e.getDetailField() != null) sb.append("세부 분야: ").append(e.getDetailField().getDescription()).append("\n");
 
         return sb.toString();
+    }
+
+    // 호스트가 등록한 모든 체험 목록 조회
+    @Transactional(readOnly = true)
+    public List<ExperienceSummaryResponseDto> getExperiencesByHostUser(User user) {
+        if (user.getRole() != Role.HOST) {
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        Host host = user.getHost();
+        if (host == null) {
+            throw new CustomException(ErrorCode.HOST_NOT_FOUND);
+        }
+        Long hostId = host.getId();
+
+        // 1. 호스트의 모든 체험 정보 (이미지 포함) 조회
+        List<Experience> experiences = experienceRepository.findAllByHostIdWithImages(hostId);
+
+        if (experiences.isEmpty()) {
+            return List.of();
+        }
+
+        // 2. 호스트 체험들의 리뷰 요약 정보 (평점, 개수) 일괄 조회
+        record ReviewSummary(Double avgRating, Long reviewCount) {}
+
+        Map<Long, ReviewSummary> reviewSummaryMap = reviewRepository.findExperienceReviewSummaryByHostId(hostId).stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0], // experienceId
+                        row -> new ReviewSummary(
+                                ((Number) row[1]).doubleValue(), // AVG(r.rating)
+                                (Long) row[2] // COUNT(r)
+                        )
+                ));
+
+        // 3. DTO로 매핑
+        return experiences.stream()
+                .map(experience -> {
+                    ReviewSummary summary = reviewSummaryMap.getOrDefault(experience.getId(), new ReviewSummary(0.0, 0L));
+                    // 체험 이미지 리스트가 비어있지 않다면 첫 번째 이미지를 대표 이미지로 사용
+                    String mainImageUrl = experience.getImageUrls().isEmpty() ? null : experience.getImageUrls().get(0);
+
+                    Double rating = summary.avgRating;
+                    Long reviewCount = summary.reviewCount;
+
+                    return new ExperienceSummaryResponseDto(
+                            experience.getId(),
+                            mainImageUrl,
+                            experience.getTitle(),
+                            experience.getPrice(),
+                            rating,
+                            experience.getDurationInHours(),
+                            reviewCount
+                    );
+                })
+                .toList();
     }
 }
