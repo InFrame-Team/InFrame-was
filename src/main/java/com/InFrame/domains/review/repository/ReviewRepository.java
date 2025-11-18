@@ -6,6 +6,7 @@ import com.InFrame.domains.reservation.entity.Reservation;
 import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.resdto.ReviewResponseDto;
 import com.InFrame.domains.user.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,6 +44,15 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "JOIN r.reservation res " +
             "WHERE res.experience.id = :experienceId")
     List<Review> findAllByExperienceId(@Param("experienceId") Long experienceId);
+
+
+    // 후기 개수 순으로 상위 호스트와 후기 개수 조회
+    @Query("SELECT r.reservation.experience.host.id, COUNT(r), AVG(r.rating) " +
+            "FROM Review r " +
+            "WHERE r.reservation.experience.host IS NOT NULL " +
+            "GROUP BY r.reservation.experience.host.id " +
+            "ORDER BY COUNT(r) DESC")
+    List<Object[]> findTopHostDataByReviewCount(Pageable pageable);
 
     // 특정 체험에 달린 모든 리뷰를 DTO로 직접 조회
     @Query("SELECT new com.InFrame.domains.review.resdto.ReviewResponseDto(" +

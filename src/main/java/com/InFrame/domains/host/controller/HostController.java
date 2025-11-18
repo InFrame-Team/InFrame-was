@@ -4,6 +4,7 @@ import com.InFrame.domains.host.controller.api.HostApi;
 import com.InFrame.domains.host.reqdto.HostRequestDto;
 import com.InFrame.domains.host.resdto.HostMapResponseDto;
 import com.InFrame.domains.host.resdto.MyHostInfoResponseDto;
+import com.InFrame.domains.host.resdto.TopHostResponseDto;
 import com.InFrame.domains.host.service.HostService;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -70,5 +71,12 @@ public class HostController implements HostApi {
 
         MyHostInfoResponseDto myHostInfo = hostService.getMyHostInfo(userDetails.getUser());
         return ResponseEntity.ok(myHostInfo);
+    }
+
+    @Override
+    @GetMapping("/top5")
+    public ResponseEntity<?> getTop5Hosts() {
+        List<TopHostResponseDto> topHosts = hostService.getTop5HostsByReviews();
+        return ResponseEntity.ok(topHosts);
     }
 }
