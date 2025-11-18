@@ -17,6 +17,9 @@ public record MyReservationResponseDto(
         @Schema(description = "체험 ID")
         Long experienceId,
 
+        @Schema(description = "호스트 ID")
+        Long hostId,
+
         @Schema(description = "예약 상태")
         ReservationStatus status,
 
@@ -65,6 +68,7 @@ public record MyReservationResponseDto(
         return new MyReservationResponseDto(
                 reservation.getId(),
                 experience.getId(),
+                host.getId(),
                 reservation.getStatus(),
                 hostUser.getName(),
                 hostUser.getProfileImageUrl(),
