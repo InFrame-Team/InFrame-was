@@ -6,12 +6,12 @@ import com.InFrame.common.service.BusinessValidationService;
 import com.InFrame.common.service.S3UploadService;
 import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.experience.entity.enums.DetailField;
-import com.InFrame.domains.experience.repository.ExperienceRepository;
 import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.host.repository.HostRepository;
 import com.InFrame.domains.host.reqdto.HostRequestDto;
 import com.InFrame.domains.host.resdto.HostMapResponseDto;
 import com.InFrame.domains.host.resdto.MyHostInfoResponseDto;
+import com.InFrame.domains.host.resdto.TopHostResponseDto;
 import com.InFrame.domains.like.repository.HostLikeRepository;
 import com.InFrame.domains.reservation.entity.enums.ReservationStatus;
 import com.InFrame.domains.reservation.repository.ReservationRepository;
@@ -20,12 +20,15 @@ import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.entity.User;
 import com.InFrame.domains.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
@@ -38,7 +41,6 @@ public class HostService {
     private final BusinessValidationService businessValidationService;
     private final S3UploadService s3UploadService;
     private final ReviewRepository reviewRepository;
-    private final ExperienceRepository experienceRepository;
     private final HostLikeRepository hostLikeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -139,4 +141,39 @@ public class HostService {
 
         return MyHostInfoResponseDto.from(host, user, likeCount, reviewCount, confirmedCount, completedCount);
     }
+
+    // 후기 많은 호스트 Top 5 조회
+    public List<TopHostResponseDto> getTop5HostsByReviews() {
+
+        Pageable pageable = PageRequest.of(0, 5);
+        List<Object[]> topHostData = reviewRepository.findTopHostDataByReviewCount(pageable);
+
+        // Host ID 추출
+        List<Long> hostIds = topHostData.stream()
+                .map(obj -> (Long) obj[0])
+                .collect(Collectors.toList());
+
+        // Host 엔티티 조회 후 Map으로 변환
+        Map<Long, Host> hostMap = hostRepository.findAllById(hostIds)
+                .stream()
+                .collect(Collectors.toMap(Host::getId, h -> h));
+
+        // DTO 변환
+        return topHostData.stream()
+                .map(obj -> {
+                    Long hostId = (Long) obj[0];
+                    Long reviewCount = (Long) obj[1];
+                    Double averageRating = (Double) obj[2];
+
+                    Host host = hostMap.get(hostId);
+
+                    return TopHostResponseDto.from(
+                            host,
+                            reviewCount != null ? reviewCount : 0L,
+                            averageRating != null ? averageRating : 0.0
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 }
