@@ -84,6 +84,10 @@ public class Experience {
     @Column(name = "available_time", nullable = false)
     private Set<LocalTime> availableTimes = new HashSet<>();
 
+    // 프로그램 유의사항
+    @Column(columnDefinition = "TEXT")
+    private String caution; // 체험 유의사항
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_id")
     private Host host;
@@ -94,7 +98,7 @@ public class Experience {
     @Builder
     public Experience(ProfessionalField professionalField,
                       DetailField detailField, String title, String description,
-                      String certifications, String companyInfo,
+                      String certifications, String companyInfo, String caution,
                       int price, int durationInHours, int maxCapacityPerSlot,
                       Set<DayOfWeek> availableDaysOfWeek, Set<LocalTime> availableTimes,
                       Host host) {
@@ -104,6 +108,7 @@ public class Experience {
         this.companyInfo = companyInfo;
         this.title = title;
         this.description = description;
+        this.caution = caution;
         this.price = price;
         this.durationInHours = durationInHours;
         this.maxCapacityPerSlot = maxCapacityPerSlot;
