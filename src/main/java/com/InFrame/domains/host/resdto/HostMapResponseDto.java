@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record HostMapResponseDto(
         @Schema(description = "호스트 ID")
         Long hostId,
+        @Schema(description = "유저 ID")
+        Long userId,
         @Schema(description = "사업자명")
         String businessName,
         @Schema(description = "호스트 본명")
@@ -35,6 +37,7 @@ public record HostMapResponseDto(
     public static HostMapResponseDto from(Host host, long reviewCount, DetailField detailField, Integer lowestPrice) {
         return new HostMapResponseDto(
                 host.getId(),
+                host.getUser().getId(),
                 host.getBusinessName(),
                 host.getUser().getName(),
                 host.getUser().getProfileImageUrl(),
