@@ -39,7 +39,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT COUNT(r), AVG(r.rating) " +
             "FROM Review r " +
             "WHERE r.reservation.experience.host.id = :hostId")
-    Object[] findReviewSummaryByHostId(@Param("hostId") Long hostId);
+    List<Object[]> findReviewSummaryByHostId(@Param("hostId") Long hostId);
 
     // 예약 ID로 리뷰가 이미 작성되었는지 확인
     @Query("SELECT r FROM Review r WHERE r.reservation IN :reservations")
