@@ -7,6 +7,7 @@ import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.review.entity.Review;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Schema(description = "체험 상세 정보 응답 DTO")
@@ -51,7 +52,25 @@ public record ExperienceDetailResponseDto(
         int reviewCount,
 
         @Schema(description = "체험 이미지 URL 목록")
-        List<String> imageUrls
+        List<String> imageUrls,
+
+        @Schema(description = "체험 유의사항")
+        String caution,
+
+        @Schema(description = "연락 가능 시작 시간")
+        LocalTime contactStartTime,
+
+        @Schema(description = "연락 가능 종료 시간")
+        LocalTime contactEndTime,
+
+        @Schema(description = "고객센터 전화번호")
+        String businessPhoneNumber,
+
+        @Schema(description = "고객센터 이메일")
+        String businessEmail,
+
+        @Schema(description = "카카오톡 채널 주소")
+        String kakaoAddress
 ) {
     public static ExperienceDetailResponseDto from(
             Experience experience,
@@ -82,7 +101,13 @@ public record ExperienceDetailResponseDto(
                 experience.getPrice(),
                 rating,
                 reviewCount,
-                experience.getImageUrls()
+                experience.getImageUrls(),
+                experience.getCaution(),
+                host.getContactStartTime(),
+                host.getContactEndTime(),
+                host.getBusinessPhoneNumber(),
+                host.getBusinessEmail(),
+                host.getKakaoAddress()
         );
     }
 }
