@@ -64,7 +64,13 @@ public record ExperienceDetailResponseDto(
         LocalTime contactEndTime,
 
         @Schema(description = "고객센터 전화번호")
-        String businessPhoneNumber
+        String businessPhoneNumber,
+
+        @Schema(description = "고객센터 이메일")
+        String businessEmail,
+
+        @Schema(description = "카카오톡 채널 주소")
+        String kakaoAddress
 ) {
     public static ExperienceDetailResponseDto from(
             Experience experience,
@@ -99,7 +105,9 @@ public record ExperienceDetailResponseDto(
                 experience.getCaution(),
                 host.getContactStartTime(),
                 host.getContactEndTime(),
-                host.getBusinessPhoneNumber()
+                host.getBusinessPhoneNumber(),
+                host.getBusinessEmail(),
+                host.getKakaoAddress()
         );
     }
 }
