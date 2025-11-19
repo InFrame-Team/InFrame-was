@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record ReviewResponseDto(
         Long reviewId,
         String writerNickname,
+        String writerProfileImageUrl,
         String hostName,
         Long experienceId,
         String experienceTitle,
@@ -19,6 +20,7 @@ public record ReviewResponseDto(
         return new ReviewResponseDto(
                 review.getId(),
                 review.getUser().getNickname(),
+                review.getUser().getProfileImageUrl(),
                 review.getReservation().getExperience().getHost().getUser().getName(),
                 review.getReservation().getExperience().getId(),
                 review.getReservation().getExperience().getTitle(),
