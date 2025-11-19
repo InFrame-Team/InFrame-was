@@ -71,6 +71,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT new com.InFrame.domains.review.resdto.ReviewResponseDto(" +
             "r.id, " +
             "u.nickname, " +
+            "u.profileImageUrl, " +
             "hu.name, " +
             "exp.id, " +
             "exp.title, " +
@@ -91,6 +92,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT new com.InFrame.domains.review.resdto.ReviewResponseDto(" +
             "r.id, " +
             "u.nickname, " +
+            "u.profileImageUrl, " +
             "hu.name, " +
             "exp.id, " +
             "exp.title, " +
