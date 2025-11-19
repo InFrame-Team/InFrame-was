@@ -185,13 +185,15 @@ public class HostService {
 
         User user = host.getUser();
 
-        // 2. 리뷰 통계 정보 조회
-        Object[] reviewSummary = reviewRepository.findReviewSummaryByHostId(hostId);
+        // 2. 리뷰 통계 정보 조회 (COUNT, AVG)
+        List<Object[]> reviewSummaryList = reviewRepository.findReviewSummaryByHostId(hostId);
 
+        Object[] reviewSummary = reviewSummaryList.isEmpty() ? new Object[]{0L, null} : reviewSummaryList.get(0);
+        
         Long reviewCount = (Long) reviewSummary[0];
         Double averageRating = (Double) reviewSummary[1];
 
-        // 3. DTO로 매핑
+        // 3. DTO로 매핑 (평점, 리뷰 수가 null인 경우 0으로 처리)
         return HostDetailResponseDto.from(
                 user,
                 host,
