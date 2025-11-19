@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,10 +33,6 @@ public interface ReviewApi {
                     @ApiResponse(responseCode = "409", description = "이미 리뷰를 작성했거나, 아직 체험 완료 상태가 아님")
             }
     )
-    @PostMapping(
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
     ResponseEntity<?> createReview(
             @Parameter(hidden = true)
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -49,7 +44,10 @@ public interface ReviewApi {
             @Parameter(
                     name = "reviewRequestDto",
                     description = "리뷰 본문 DTO",
-                    schema = @Schema(implementation = ReviewRequestDto.class)
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ReviewRequestDto.class)
+                    )
             )
             ReviewRequestDto reviewRequestDto,
 
