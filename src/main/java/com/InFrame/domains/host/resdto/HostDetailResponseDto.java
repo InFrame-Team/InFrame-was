@@ -66,9 +66,12 @@ public record HostDetailResponseDto(
         Long reviewCount,
 
         @Schema(description = "평점 (0.0 ~ 5.0)")
-        Double averageRating
+        Double averageRating,
+
+        @Schema(description = "사용자의 좋아요 상태")
+        Boolean isLiked
 ) {
-    public static HostDetailResponseDto from(User user, Host host, Long reviewCount, Double averageRating) {
+    public static HostDetailResponseDto from(User user, Host host, Long reviewCount, Double averageRating, Boolean isLiked) {
         return new HostDetailResponseDto(
                 user.getId(),
                 user.getName(),
@@ -89,7 +92,8 @@ public record HostDetailResponseDto(
                 host.getCompanyLogoUrl(),
                 host.getDetailedDescription(),
                 reviewCount,
-                averageRating
+                averageRating,
+                isLiked
         );
     }
 }

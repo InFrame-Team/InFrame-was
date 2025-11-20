@@ -5,6 +5,7 @@ import com.InFrame.common.exception.error.ErrorCode;
 import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.experience.repository.ExperienceRepository;
 import com.InFrame.domains.host.entity.Host;
+import com.InFrame.domains.like.repository.HostLikeRepository;
 import com.InFrame.domains.reservation.entity.Reservation;
 import com.InFrame.domains.reservation.entity.enums.ReservationStatus;
 import com.InFrame.domains.reservation.repository.ReservationRepository;
@@ -35,6 +36,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ExperienceRepository experienceRepository;
     private final ReviewRepository reviewRepository;
+    private final HostLikeRepository hostLikeRepository;
 
     // 특정 날짜의 예약 가능한 시간 목록 조회
     @Transactional(readOnly = true)
@@ -111,20 +113,32 @@ public class ReservationService {
     // 내 예약 내역 조회
     @Transactional(readOnly = true)
     public List<MyReservationResponseDto> getMyReservations(User user) {
+        // 1. 사용자 예약 목록 조회
         List<Reservation> reservations = reservationRepository.findAllByUserOrderByReservedStartTimeDesc(user);
 
-        // 이 예약 목록에 대해 이미 작성된 리뷰가 있는지 한 번에 조회
+        // 예약 목록이 비어있으면 빈 리스트 반환
+        if (reservations.isEmpty()) {
+            return List.of();
+        }
+
+        // 2-1. 리뷰 상태 bulk 조회 (사용자 제공 코드)
         List<Review> reviews = reviewRepository.findAllByReservationIn(reservations);
 
         Set<Long> reviewedReservationIds = reviews.stream()
                 .map(review -> review.getReservation().getId())
                 .collect(Collectors.toSet());
 
-        // DTO로 변환
+        // 3. DTO로 변환 (리뷰 상태 및 호스트 좋아요 상태 포함)
         return reservations.stream()
                 .map(reservation -> {
                     boolean reviewWritten = reviewedReservationIds.contains(reservation.getId());
-                    return MyReservationResponseDto.from(reservation, reviewWritten);
+
+                    // 호스트 좋아요 상태 확인
+                    // 각 예약의 체험 -> 호스트를 가져와서 사용자의 좋아요 상태를 확인합니다.
+                    Host host = reservation.getExperience().getHost();
+                    boolean isHostLiked = hostLikeRepository.existsByUserAndHost(user, host);
+
+                    return MyReservationResponseDto.from(reservation, reviewWritten, isHostLiked);
                 })
                 .collect(Collectors.toList());
     }

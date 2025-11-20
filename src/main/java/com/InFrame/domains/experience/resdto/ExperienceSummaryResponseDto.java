@@ -26,6 +26,9 @@ public record ExperienceSummaryResponseDto(
         int durationInHours,
 
         @Schema(description = "리뷰 총 개수")
-        Long reviewCount
+        Long reviewCount,
+
+        @Schema(description = "사용자의 좋아요 상태")
+        boolean isLiked
 ) {
 }

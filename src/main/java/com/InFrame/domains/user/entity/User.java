@@ -70,6 +70,10 @@ public class User {
         this.profileImageUrl = profileImageUrl;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Builder
     public User(String email, String password, String nickname,
                 String name, Role role, String provider, String providerId,
@@ -83,4 +87,5 @@ public class User {
         this.providerId = providerId;
         this.profileImageUrl = profileImageUrl;
     }
+
 }

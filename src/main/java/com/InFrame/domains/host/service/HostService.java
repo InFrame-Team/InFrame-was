@@ -178,7 +178,7 @@ public class HostService {
 
     // 특정 호스트 상세 정보 조회
     @Transactional(readOnly = true)
-    public HostDetailResponseDto getHostDetail(Long hostId) {
+    public HostDetailResponseDto getHostDetail(Long hostId, Long userId) {
         // 1. Host와 User 정보 조회 (Eager fetch)
         Host host = hostRepository.findByIdWithUser(hostId)
                 .orElseThrow(() -> new CustomException(ErrorCode.HOST_INFO_NOT_FOUND));
@@ -189,16 +189,25 @@ public class HostService {
         List<Object[]> reviewSummaryList = reviewRepository.findReviewSummaryByHostId(hostId);
 
         Object[] reviewSummary = reviewSummaryList.isEmpty() ? new Object[]{0L, null} : reviewSummaryList.get(0);
-        
+
         Long reviewCount = (Long) reviewSummary[0];
         Double averageRating = (Double) reviewSummary[1];
+
+        boolean isLiked = false;
+        if (userId != null) {
+            User userStub = new User();
+            userStub.setId(userId);
+
+            isLiked = hostLikeRepository.findByUserAndHost(userStub, host).isPresent();
+        }
 
         // 3. DTO로 매핑 (평점, 리뷰 수가 null인 경우 0으로 처리)
         return HostDetailResponseDto.from(
                 user,
                 host,
                 reviewCount != null ? reviewCount : 0L,
-                averageRating != null ? averageRating : 0.0
+                averageRating != null ? averageRating : 0.0,
+                isLiked
         );
     }
 

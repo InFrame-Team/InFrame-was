@@ -77,12 +77,16 @@ public record ExperienceDetailResponseDto(
         String businessEmail,
 
         @Schema(description = "카카오톡 채널 주소")
-        String kakaoAddress
+        String kakaoAddress,
+
+        @Schema(description = "사용자의 좋아요 상태")
+        boolean isLiked
 ) {
     public static ExperienceDetailResponseDto from(
             Experience experience,
             Host host,
-            List<Review> reviewEntities
+            List<Review> reviewEntities,
+            boolean isLiked
     ) {
         int reviewCount = reviewEntities.size();
         double rating = 0.0;
@@ -116,7 +120,8 @@ public record ExperienceDetailResponseDto(
                 host.getContactEndTime(),
                 host.getBusinessPhoneNumber(),
                 host.getBusinessEmail(),
-                host.getKakaoAddress()
+                host.getKakaoAddress(),
+                isLiked
         );
     }
 }

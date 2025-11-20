@@ -133,20 +133,52 @@ public class LikeService {
         // 3. 추출된 '호스트' 목록에 해당하는 모든 '체험'과 '체험 이미지'를 한 번에 가져옴
         List<Experience> allExperiences = experienceRepository.findAllByHostInWithImages(hosts);
 
+        // 3.5. 호스트가 등록한 모든 체험에 대한 '리뷰'를 한 번에 가져옴
+        List<Review> allReviews = reviewRepository.findAllByExperienceInWithExperience(allExperiences);
+
         // 4. 체험 목록을 호스트별로 그룹화
         Map<Host, List<Experience>> experiencesByHost = allExperiences.stream()
                 .collect(Collectors.groupingBy(Experience::getHost));
 
+        // 5. 호스트별 '평균 평점' 및 '전체 후기 개수' 계산
+        Map<Host, HostReviewSummary> hostReviewSummaries = allReviews.stream()
+                .collect(Collectors.groupingBy(
+                        review -> review.getReservation().getExperience().getHost(), // 리뷰의 예약, 체험을 통해 호스트를 추출
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                reviews -> {
+                                    long reviewCount = reviews.size();
+                                    // Review 엔티티에 getRating()이 있고 숫자형(int/double)을 반환한다고 가정
+                                    double averageRating = reviews.stream()
+                                            .mapToDouble(Review::getRating)
+                                            .average()
+                                            .orElse(0.0);
+                                    // 소수점 한 자리로 반올림 (선택 사항)
+                                    double roundedRating = Math.round(averageRating * 10) / 10.0;
+                                    return new HostReviewSummary(roundedRating, reviewCount);
+                                }
+                        )
+                ));
+
         return likes.stream()
                 .map(like -> {
                     Host host = like.getHost();
-
                     List<Experience> experiences = experiencesByHost.getOrDefault(host, Collections.emptyList());
+                    // 후기가 없는 호스트의 경우 기본값(평점 0.0, 개수 0L) 사용
+                    HostReviewSummary summary = hostReviewSummaries.getOrDefault(host, new HostReviewSummary(0.0, 0L));
 
-                    return HostLikeResponseDto.from(host, experiences);
+                    return HostLikeResponseDto.from(
+                            host,
+                            experiences,
+                            summary.averageRating(),
+                            summary.reviewCount()
+                    );
                 })
                 .collect(Collectors.toList());
     }
+
+    // 호스트 리뷰 요약을 위한 내부 레코드
+    private record HostReviewSummary(double averageRating, long reviewCount) {}
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
