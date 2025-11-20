@@ -27,6 +27,9 @@ public record ExperienceDetailResponseDto(
         @Schema(description = "호스트 자기소개")
         String hostIntro,
 
+        @Schema(description = "사업자 명")
+        String businessName,
+
         @Schema(description = "체험 소요시간")
         int durationInHours,
 
@@ -93,6 +96,7 @@ public record ExperienceDetailResponseDto(
                 host.getUser().getProfileImageUrl(),
                 host.getUser().getName(),
                 host.getDescription(),
+                host.getBusinessName(),
                 experience.getDurationInHours(),
                 experience.getDescription(),
                 experience.getProfessionalField(),
