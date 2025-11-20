@@ -10,6 +10,7 @@ import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceSummaryResponseDto;
 import com.InFrame.domains.host.entity.Host;
+import com.InFrame.domains.host.repository.HostRepository;
 import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.repository.ReviewRepository;
 import com.InFrame.domains.user.entity.Role;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 public class ExperienceService {
     private final ExperienceRepository experienceRepository;
     private final ReviewRepository reviewRepository;
+    private final HostRepository hostRepository;
     private final VectorStore vectorStore;
     private final S3UploadService s3UploadService;
 
@@ -224,6 +226,55 @@ public class ExperienceService {
                 .map(experience -> {
                     ReviewSummary summary = reviewSummaryMap.getOrDefault(experience.getId(), new ReviewSummary(0.0, 0L));
                     // 체험 이미지 리스트가 비어있지 않다면 첫 번째 이미지를 대표 이미지로 사용
+                    String mainImageUrl = experience.getImageUrls().isEmpty() ? null : experience.getImageUrls().get(0);
+
+                    Double rating = summary.avgRating;
+                    Long reviewCount = summary.reviewCount;
+
+                    return new ExperienceSummaryResponseDto(
+                            experience.getId(),
+                            mainImageUrl,
+                            experience.getTitle(),
+                            experience.getPrice(),
+                            rating,
+                            experience.getDurationInHours(),
+                            reviewCount
+                    );
+                })
+                .toList();
+    }
+
+    // 특정 호스트 ID의 모든 체험 목록 조회
+    @Transactional(readOnly = true)
+    public List<ExperienceSummaryResponseDto> getExperiencesByHostId(Long hostId) {
+        // 1. 호스트 존재 여부 확인
+        if (!hostRepository.existsById(hostId)) {
+            throw new CustomException(ErrorCode.HOST_NOT_FOUND);
+        }
+
+        // 2. 호스트의 모든 체험 정보 (이미지 포함) 조회
+        List<Experience> experiences = experienceRepository.findAllByHostIdWithImages(hostId);
+
+        if (experiences.isEmpty()) {
+            return List.of();
+        }
+
+        // 3. 호스트 체험들의 리뷰 요약 정보 (평점, 개수) 일괄 조회
+        record ReviewSummary(Double avgRating, Long reviewCount) {}
+
+        Map<Long, ReviewSummary> reviewSummaryMap = reviewRepository.findExperienceReviewSummaryByHostId(hostId).stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0], // experienceId
+                        row -> new ReviewSummary(
+                                ((Number) row[1]).doubleValue(), // AVG(r.rating)
+                                (Long) row[2] // COUNT(r)
+                        )
+                ));
+
+        // 4. DTO로 매핑
+        return experiences.stream()
+                .map(experience -> {
+                    ReviewSummary summary = reviewSummaryMap.getOrDefault(experience.getId(), new ReviewSummary(0.0, 0L));
                     String mainImageUrl = experience.getImageUrls().isEmpty() ? null : experience.getImageUrls().get(0);
 
                     Double rating = summary.avgRating;

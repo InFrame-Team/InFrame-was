@@ -102,9 +102,17 @@ public interface ExperienceApi {
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ExperienceSummaryResponseDto.class))))
     @ApiResponse(responseCode = "403", description = "권한 없음 (호스트가 아닌 사용자)",
             content = @Content(schema = @Schema(hidden = true)))
-    @GetMapping("/my-list")
     ResponseEntity<?> getExperiencesByHost(
             @Parameter(hidden = true)
             @AuthenticationPrincipal UserDetailsImpl userDetails
+    );
+
+    @Operation(summary = "특정 호스트의 모든 체험 목록 조회", description = "Host ID를 기준으로 해당 호스트가 등록한 모든 체험의 요약 정보를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "체험 목록 조회 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ExperienceSummaryResponseDto.class))))
+    @ApiResponse(responseCode = "404", description = "호스트를 찾을 수 없음")
+    ResponseEntity<?> getExperiencesByHostId(
+            @Parameter(description = "조회할 호스트 ID", required = true)
+            @PathVariable Long hostId
     );
 }

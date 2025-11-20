@@ -3,6 +3,7 @@ package com.InFrame.domains.reservation.controller;
 import com.InFrame.domains.reservation.controller.api.ReservationApi;
 import com.InFrame.domains.reservation.reqdto.ReservationRequestDto;
 import com.InFrame.domains.reservation.resdto.AvailableSlotDto;
+import com.InFrame.domains.reservation.resdto.HostReservationResponseDto;
 import com.InFrame.domains.reservation.resdto.MyReservationResponseDto;
 import com.InFrame.domains.reservation.resdto.ReservationResponseDto;
 import com.InFrame.domains.reservation.service.ReservationService;
@@ -70,5 +71,14 @@ public class ReservationController implements ReservationApi {
         reservationService.cancelReservation(userDetails.getUser(), reservationId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @GetMapping("/host/reservations")
+    public ResponseEntity<?> getHostReservations(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        List<HostReservationResponseDto> response = reservationService.getHostReservations(userDetails.getUser());
+        return ResponseEntity.ok(response);
     }
 }

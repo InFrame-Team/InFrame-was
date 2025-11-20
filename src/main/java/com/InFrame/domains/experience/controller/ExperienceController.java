@@ -88,4 +88,13 @@ public class ExperienceController implements ExperienceApi {
         List<ExperienceSummaryResponseDto> response = experienceService.getExperiencesByHostUser(userDetails.getUser());
         return ResponseEntity.ok(response);
     }
+
+    @Override
+    @GetMapping("/host/{hostId}")
+    public ResponseEntity<?> getExperiencesByHostId(
+            @PathVariable Long hostId
+    ) {
+        List<ExperienceSummaryResponseDto> response = experienceService.getExperiencesByHostId(hostId);
+        return ResponseEntity.ok(response);
+    }
 }
