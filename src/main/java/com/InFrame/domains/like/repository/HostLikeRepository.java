@@ -27,4 +27,6 @@ public interface HostLikeRepository extends JpaRepository<HostLike, Long> {
 
     // 유저가 누른 호스트 좋아요 수
     long countByUser(User user);
+
+    boolean existsByUserAndHost(User user, Host host);
 }

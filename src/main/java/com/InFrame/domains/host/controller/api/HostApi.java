@@ -142,6 +142,9 @@ public interface HostApi {
     })
     ResponseEntity<?> getHostDetail(
             @Parameter(description = "조회할 호스트 ID", required = true)
-            @PathVariable Long hostId
+            @PathVariable Long hostId,
+
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails // ✨ NEW PARAMETER
     );
 }

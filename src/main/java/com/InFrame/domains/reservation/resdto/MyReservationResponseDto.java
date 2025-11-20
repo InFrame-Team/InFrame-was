@@ -51,9 +51,12 @@ public record MyReservationResponseDto(
         LocalDateTime createdAt,
 
         @Schema(description = "리뷰 작성 여부")
-        boolean reviewWritten
+        boolean reviewWritten,
+
+        @Schema(description = "호스트 좋아요 상태")
+        boolean isHostLiked
 ) {
-    public static MyReservationResponseDto from(Reservation reservation, boolean reviewWritten) {
+    public static MyReservationResponseDto from(Reservation reservation, boolean reviewWritten, boolean isHostLiked) {
         Experience experience = reservation.getExperience();
         Host host = experience.getHost();
         User hostUser = host.getUser();
@@ -79,7 +82,8 @@ public record MyReservationResponseDto(
                 reservation.getTotalPrice(),
                 TotalParticipants,
                 reservation.getCreatedAt(),
-                reviewWritten
+                reviewWritten,
+                isHostLiked
         );
     }
 }

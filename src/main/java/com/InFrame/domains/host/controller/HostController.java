@@ -84,8 +84,16 @@ public class HostController implements HostApi {
 
     @Override
     @GetMapping("/{hostId}")
-    public ResponseEntity<?> getHostDetail(@PathVariable Long hostId) {
-        HostDetailResponseDto response = hostService.getHostDetail(hostId);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<HostDetailResponseDto> getHostDetail(
+            @PathVariable Long hostId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        // 1. userId 추출 및 null 체크
+        Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+
+        // 2. Service 호출
+        HostDetailResponseDto responseDto = hostService.getHostDetail(hostId, userId);
+
+        return ResponseEntity.ok(responseDto);
     }
 }
