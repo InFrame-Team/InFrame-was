@@ -27,4 +27,7 @@ public interface ExperienceRepository extends JpaRepository<Experience, Long> {
             "LEFT JOIN FETCH e.imageUrls " +
             "WHERE e.host IN :hosts")
     List<Experience> findAllByHostInWithImages(@Param("hosts") List<Host> hosts);
+
+    @Query("SELECT e FROM Experience e JOIN FETCH e.host WHERE e.id IN :ids")
+    List<Experience> findAllByIdWithHost(@Param("ids") List<Long> ids);
 }

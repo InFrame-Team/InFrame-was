@@ -134,7 +134,7 @@ public class ExperienceService {
         }
 
         // 3. MySQL에서 ID 목록으로 체험 정보 일괄 조회
-        Map<Long, Experience> experienceMap = experienceRepository.findAllById(experienceIds)
+        Map<Long, Experience> experienceMap = experienceRepository.findAllByIdWithHost(experienceIds)
                 .stream()
                 .collect(Collectors.toMap(Experience::getId, e -> e));
 
@@ -167,6 +167,13 @@ public class ExperienceService {
             metadata.put("type", "experience");
             metadata.put("title", experience.getTitle());
 
+            if (experience.getProfessionalField() != null) {
+                metadata.put("professionalField", experience.getProfessionalField().name());
+            }
+            if (experience.getDetailField() != null) {
+                metadata.put("detailField", experience.getDetailField().name());
+            }
+
             // 3. Document 객체 생성 및 VectorStore에 추가
             Document doc = new Document(content, metadata);
             vectorStore.add(List.of(doc));
@@ -180,11 +187,25 @@ public class ExperienceService {
 
     // VectorDB에 저장할 텍스트 생성
     private String buildExperienceContent(Experience e) {
+        Host h = e.getHost();
+
         StringBuilder sb = new StringBuilder();
+
+        if (h != null) {
+            sb.append("호스트 사업장 이름: ").append(h.getBusinessName()).append("\n");
+            if (h.getCategory() != null) sb.append("호스트 카테고리: ").append(h.getCategory().getDescription()).append("\n");
+            if (h.getDescription() != null) sb.append("호스트 소개: ").append(h.getDescription()).append("\n");
+            if (h.getAddressBase() != null) sb.append("위치: ").append(h.getAddressBase()).append("\n");
+        }
+
         if (e.getTitle() != null) sb.append("체험 제목: ").append(e.getTitle()).append("\n");
         if (e.getDescription() != null) sb.append("체험 설명: ").append(e.getDescription()).append("\n");
         if (e.getProfessionalField() != null) sb.append("전문 분야: ").append(e.getProfessionalField().getDescription()).append("\n");
         if (e.getDetailField() != null) sb.append("세부 분야: ").append(e.getDetailField().getDescription()).append("\n");
+        if (e.getCertifications() != null) sb.append("보유 자격증/인증: ").append(e.getCertifications()).append("\n");
+        sb.append("가격: ").append(e.getPrice()).append("원\n");
+        sb.append("소요 시간: ").append(e.getDurationInHours()).append("시간\n");
+        if (e.getMaxCapacityPerSlot() > 0) sb.append("최대 인원: ").append(e.getMaxCapacityPerSlot()).append("명\n");
 
         return sb.toString();
     }
