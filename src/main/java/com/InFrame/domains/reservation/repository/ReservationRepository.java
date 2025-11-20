@@ -57,4 +57,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     // 특정 호스트의 모든 체험에 대해 특정 상태의 예약 수
     long countByExperience_HostAndStatus(Host host, ReservationStatus status);
+
+    // 호스트 ID로 해당 호스트의 모든 예약 목록 조회 (체험 정보 포함)
+    @Query("SELECT r FROM Reservation r " +
+            "JOIN FETCH r.experience e " +
+            "JOIN FETCH e.host h " +
+            "WHERE h.id = :hostId " +
+            "ORDER BY r.reservedStartTime DESC")
+    List<Reservation> findAllByHostIdWithExperience(@Param("hostId") Long hostId);
 }
