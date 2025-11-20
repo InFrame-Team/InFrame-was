@@ -7,6 +7,7 @@ import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.experience.repository.ExperienceRepository;
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
 import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
+import com.InFrame.domains.experience.resdto.ExperienceImagesResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceSummaryResponseDto;
 import com.InFrame.domains.host.entity.Host;
@@ -313,6 +314,23 @@ public class ExperienceService {
                             reviewCount
                     );
                 })
+                .toList();
+    }
+
+    // 특정 호스트 ID의 체험 이미지 목록 조회
+    @Transactional(readOnly = true)
+    public List<ExperienceImagesResponseDto> getExperienceImagesByHostId(Long hostId) {
+        // 1. 호스트 존재 확인
+        if (!hostRepository.existsById(hostId)) {
+            throw new CustomException(ErrorCode.HOST_NOT_FOUND);
+        }
+
+        // 2. 호스트의 모든 체험 정보 (이미지 포함) 조회
+        List<Experience> experiences = experienceRepository.findAllByHostIdWithImages(hostId);
+
+        // 3. DTO로 매핑
+        return experiences.stream()
+                .map(ExperienceImagesResponseDto::from)
                 .toList();
     }
 }
