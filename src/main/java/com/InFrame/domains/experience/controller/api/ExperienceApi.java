@@ -82,7 +82,6 @@ public interface ExperienceApi {
             @ApiResponse(responseCode = "404", description = "해당 체험을 찾을 수 없음",
                     content = @Content(schema = @Schema(hidden = true)))
     })
-    @GetMapping("/{experienceId}")
     ResponseEntity<?> getExperienceDetail(
             @Parameter(description = "조회할 체험 ID", required = true)
             @PathVariable Long experienceId
