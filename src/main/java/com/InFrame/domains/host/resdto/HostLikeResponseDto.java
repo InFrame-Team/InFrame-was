@@ -20,11 +20,19 @@ public record HostLikeResponseDto(
         String profileImageUrl,
 
         @Schema(description = "호스트가 등록한 체험 이미지 URL 목록")
-        List<String> experienceImageUrls
+        List<String> experienceImageUrls,
+
+        @Schema(description = "호스트 평균 평점")
+        Double averageRating,
+
+        @Schema(description = "호스트 전체 후기 개수")
+        Long reviewCount
 ) {
     public static HostLikeResponseDto from(
             Host host,
-            List<Experience> experiences
+            List<Experience> experiences,
+            Double averageRating,
+            Long reviewCount
     ) {
         List<String> allImages = experiences.stream()
                 .map(Experience::getImageUrls)
@@ -35,7 +43,9 @@ public record HostLikeResponseDto(
                 host.getId(),
                 host.getUser().getName(),
                 host.getUser().getProfileImageUrl(),
-                allImages
+                allImages,
+                averageRating,
+                reviewCount
         );
     }
 }
