@@ -13,6 +13,9 @@ public record ExperienceSummaryResponseDto(
         @Schema(description = "체험 이름")
         String title,
 
+        @Schema(description = "체험 설명")
+        String description,
+
         @Schema(description = "가격")
         int price,
 
