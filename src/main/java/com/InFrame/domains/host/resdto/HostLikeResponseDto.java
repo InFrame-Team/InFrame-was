@@ -16,6 +16,9 @@ public record HostLikeResponseDto(
         @Schema(description = "호스트 본명")
         String hostName,
 
+        @Schema(description = "호스트 소개")
+        String hostIntro,
+
         @Schema(description = "호스트 프로필 이미지")
         String profileImageUrl,
 
@@ -43,6 +46,7 @@ public record HostLikeResponseDto(
                 host.getId(),
                 host.getUser().getName(),
                 host.getUser().getProfileImageUrl(),
+                host.getDescription(),
                 allImages,
                 averageRating,
                 reviewCount
