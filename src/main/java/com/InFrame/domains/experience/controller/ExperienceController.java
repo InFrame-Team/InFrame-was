@@ -3,6 +3,7 @@ package com.InFrame.domains.experience.controller;
 import com.InFrame.domains.experience.controller.api.ExperienceApi;
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
 import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
+import com.InFrame.domains.experience.resdto.ExperienceImagesResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceSummaryResponseDto;
 import com.InFrame.domains.experience.service.ExperienceService;
@@ -95,6 +96,15 @@ public class ExperienceController implements ExperienceApi {
             @PathVariable Long hostId
     ) {
         List<ExperienceSummaryResponseDto> response = experienceService.getExperiencesByHostId(hostId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @GetMapping("/host/{hostId}/images")
+    public ResponseEntity<?> getExperienceImagesByHostId(
+            @PathVariable Long hostId
+    ) {
+        List<ExperienceImagesResponseDto> response = experienceService.getExperienceImagesByHostId(hostId);
         return ResponseEntity.ok(response);
     }
 }

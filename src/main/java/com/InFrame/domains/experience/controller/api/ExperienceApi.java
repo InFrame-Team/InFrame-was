@@ -2,6 +2,7 @@ package com.InFrame.domains.experience.controller.api;
 
 import com.InFrame.domains.experience.reqdto.ExperienceRequestDto;
 import com.InFrame.domains.experience.resdto.ExperienceDetailResponseDto;
+import com.InFrame.domains.experience.resdto.ExperienceImagesResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceSummaryResponseDto;
 import com.InFrame.security.userdetails.UserDetailsImpl;
@@ -112,6 +113,15 @@ public interface ExperienceApi {
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ExperienceSummaryResponseDto.class))))
     @ApiResponse(responseCode = "404", description = "호스트를 찾을 수 없음")
     ResponseEntity<?> getExperiencesByHostId(
+            @Parameter(description = "조회할 호스트 ID", required = true)
+            @PathVariable Long hostId
+    );
+
+    @Operation(summary = "특정 호스트의 체험 이미지 목록 조회", description = "Host ID를 기준으로 해당 호스트가 등록한 모든 체험의 이미지 리스트를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "이미지 목록 조회 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ExperienceImagesResponseDto.class))))
+    @ApiResponse(responseCode = "404", description = "호스트를 찾을 수 없음")
+    ResponseEntity<?> getExperienceImagesByHostId(
             @Parameter(description = "조회할 호스트 ID", required = true)
             @PathVariable Long hostId
     );
