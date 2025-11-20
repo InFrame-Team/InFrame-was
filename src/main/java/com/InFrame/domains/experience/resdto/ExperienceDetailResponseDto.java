@@ -15,6 +15,10 @@ public record ExperienceDetailResponseDto(
         @Schema(description = "체험 ID")
         Long experienceId,
 
+        @Schema(description = "호스트 ID")
+        Long hostId,
+
+
         @Schema(description = "체험 제목")
         String title,
 
@@ -92,6 +96,7 @@ public record ExperienceDetailResponseDto(
 
         return new ExperienceDetailResponseDto(
                 experience.getId(),
+                host.getId(),
                 experience.getTitle(),
                 host.getUser().getProfileImageUrl(),
                 host.getUser().getName(),
