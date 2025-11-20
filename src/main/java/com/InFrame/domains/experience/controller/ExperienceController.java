@@ -65,9 +65,11 @@ public class ExperienceController implements ExperienceApi {
     @Override
     @GetMapping("/{experienceId}")
     public ResponseEntity<?> getExperienceDetail(
-            @PathVariable Long experienceId
+            @PathVariable Long experienceId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        ExperienceDetailResponseDto responseDto = experienceService.getExperienceDetail(experienceId);
+        Long userId = userDetails != null ? userDetails.getUser().getId() : null; // userId 추출
+        ExperienceDetailResponseDto responseDto = experienceService.getExperienceDetail(experienceId, userId);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -93,9 +95,11 @@ public class ExperienceController implements ExperienceApi {
     @Override
     @GetMapping("/host/{hostId}")
     public ResponseEntity<?> getExperiencesByHostId(
-            @PathVariable Long hostId
+            @PathVariable Long hostId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        List<ExperienceSummaryResponseDto> response = experienceService.getExperiencesByHostId(hostId);
+        Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+        List<ExperienceSummaryResponseDto> response = experienceService.getExperiencesByHostId(hostId, userId); // userId 전달
         return ResponseEntity.ok(response);
     }
 

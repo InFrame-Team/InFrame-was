@@ -82,10 +82,12 @@ public interface ExperienceApi {
             @ApiResponse(responseCode = "404", description = "해당 체험을 찾을 수 없음",
                     content = @Content(schema = @Schema(hidden = true)))
     })
-    @GetMapping("/{experienceId}")
     ResponseEntity<?> getExperienceDetail(
             @Parameter(description = "조회할 체험 ID", required = true)
-            @PathVariable Long experienceId
+            @PathVariable Long experienceId,
+
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     );
 
     @Operation(summary = "AI 체험 추천", description = "검색 쿼리와 유사한 체험을 AI가 추천합니다.")
@@ -114,7 +116,10 @@ public interface ExperienceApi {
     @ApiResponse(responseCode = "404", description = "호스트를 찾을 수 없음")
     ResponseEntity<?> getExperiencesByHostId(
             @Parameter(description = "조회할 호스트 ID", required = true)
-            @PathVariable Long hostId
+            @PathVariable Long hostId,
+
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     );
 
     @Operation(summary = "특정 호스트의 체험 이미지 목록 조회", description = "Host ID를 기준으로 해당 호스트가 등록한 모든 체험의 이미지 리스트를 조회합니다.")

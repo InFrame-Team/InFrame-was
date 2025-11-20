@@ -12,6 +12,7 @@ import com.InFrame.domains.experience.resdto.ExperienceResponseDto;
 import com.InFrame.domains.experience.resdto.ExperienceSummaryResponseDto;
 import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.host.repository.HostRepository;
+import com.InFrame.domains.like.repository.ExperienceLikeRepository;
 import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.repository.ReviewRepository;
 import com.InFrame.domains.user.entity.Role;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,6 +42,7 @@ public class ExperienceService {
     private final HostRepository hostRepository;
     private final VectorStore vectorStore;
     private final S3UploadService s3UploadService;
+    private final ExperienceLikeRepository experienceLikeRepository;
 
     // 체험 생성
     @Transactional
@@ -90,7 +93,7 @@ public class ExperienceService {
 
     // 체험 상세 조회
     @Transactional(readOnly = true)
-    public ExperienceDetailResponseDto getExperienceDetail(Long experienceId) {
+    public ExperienceDetailResponseDto getExperienceDetail(Long experienceId, Long userId) {
         // 1. 체험(Experience) 조회
         Experience experience = experienceRepository.findById(experienceId)
                 .orElseThrow(() -> new CustomException(ErrorCode.EXPERIENCE_NOT_FOUND));
@@ -101,7 +104,18 @@ public class ExperienceService {
         // 3. 해당 체험의 리뷰(Review) 목록 조회
         List<Review> reviews = reviewRepository.findAllByExperienceId(experienceId);
 
-        return ExperienceDetailResponseDto.from(experience, host, reviews);
+        // 4. '좋아요' 상태 확인
+        boolean isLiked = false;
+        if (userId != null) {
+            User userStub = new User();
+            userStub.setId(userId);
+
+            isLiked = experienceLikeRepository.findByUserAndExperience(
+                    userStub, experience
+            ).isPresent();
+        }
+
+        return ExperienceDetailResponseDto.from(experience, host, reviews, isLiked);
     }
 
     // AI 기반 체험 추천
@@ -223,6 +237,7 @@ public class ExperienceService {
             throw new CustomException(ErrorCode.HOST_NOT_FOUND);
         }
         Long hostId = host.getId();
+        Long userId = user.getId();
 
         // 1. 호스트의 모든 체험 정보 (이미지 포함) 조회
         List<Experience> experiences = experienceRepository.findAllByHostIdWithImages(hostId);
@@ -243,6 +258,14 @@ public class ExperienceService {
                         )
                 ));
 
+        // 3. 체험 ID 목록 추출
+        List<Long> experienceIds = experiences.stream().map(Experience::getId).toList();
+
+        // 4. 현재 유저가 '좋아요'를 누른 체험 ID 목록 조회 (✨ NEW LOGIC)
+        Set<Long> likedExperienceIds = (userId != null) ?
+                experienceLikeRepository.findExperienceIdsLikedByUserAndExperienceIds(userId, experienceIds).stream().collect(Collectors.toSet()) :
+                Set.of();
+
         // 3. DTO로 매핑
         return experiences.stream()
                 .map(experience -> {
@@ -252,6 +275,7 @@ public class ExperienceService {
 
                     Double rating = summary.avgRating;
                     Long reviewCount = summary.reviewCount;
+                    boolean isLiked = likedExperienceIds.contains(experience.getId());
 
                     return new ExperienceSummaryResponseDto(
                             experience.getId(),
@@ -261,7 +285,8 @@ public class ExperienceService {
                             experience.getPrice(),
                             rating,
                             experience.getDurationInHours(),
-                            reviewCount
+                            reviewCount,
+                            isLiked // ✨ PASS isLiked
                     );
                 })
                 .toList();
@@ -269,7 +294,7 @@ public class ExperienceService {
 
     // 특정 호스트 ID의 모든 체험 목록 조회
     @Transactional(readOnly = true)
-    public List<ExperienceSummaryResponseDto> getExperiencesByHostId(Long hostId) {
+    public List<ExperienceSummaryResponseDto> getExperiencesByHostId(Long hostId, Long userId) { // ✨ ADDED userId
         // 1. 호스트 존재 여부 확인
         if (!hostRepository.existsById(hostId)) {
             throw new CustomException(ErrorCode.HOST_NOT_FOUND);
@@ -286,6 +311,7 @@ public class ExperienceService {
         record ReviewSummary(Double avgRating, Long reviewCount) {}
 
         Map<Long, ReviewSummary> reviewSummaryMap = reviewRepository.findExperienceReviewSummaryByHostId(hostId).stream()
+                // ... (리뷰 요약 로직 생략)
                 .collect(Collectors.toMap(
                         row -> (Long) row[0], // experienceId
                         row -> new ReviewSummary(
@@ -294,7 +320,15 @@ public class ExperienceService {
                         )
                 ));
 
-        // 4. DTO로 매핑
+        // 4. 체험 ID 목록 추출
+        List<Long> experienceIds = experiences.stream().map(Experience::getId).toList();
+
+        // 5. 현재 유저가 '좋아요'를 누른 체험 ID 목록 조회 (✨ NEW LOGIC)
+        Set<Long> likedExperienceIds = (userId != null) ?
+                experienceLikeRepository.findExperienceIdsLikedByUserAndExperienceIds(userId, experienceIds).stream().collect(Collectors.toSet()) :
+                Set.of();
+
+        // 6. DTO로 매핑 (MODIFIED)
         return experiences.stream()
                 .map(experience -> {
                     ReviewSummary summary = reviewSummaryMap.getOrDefault(experience.getId(), new ReviewSummary(0.0, 0L));
@@ -302,6 +336,7 @@ public class ExperienceService {
 
                     Double rating = summary.avgRating;
                     Long reviewCount = summary.reviewCount;
+                    boolean isLiked = likedExperienceIds.contains(experience.getId()); // ✨ NEW LOGIC
 
                     return new ExperienceSummaryResponseDto(
                             experience.getId(),
@@ -311,7 +346,8 @@ public class ExperienceService {
                             experience.getPrice(),
                             rating,
                             experience.getDurationInHours(),
-                            reviewCount
+                            reviewCount,
+                            isLiked // ✨ PASS isLiked
                     );
                 })
                 .toList();

@@ -26,4 +26,11 @@ public interface ExperienceLikeRepository extends JpaRepository<ExperienceLike, 
 
     // 유저가 누른 호스트 좋아요 수
     long countByUser(User user);
+
+    // 특정 유저가 '좋아요'를 누른 체험 ID 목록 조회
+    @Query("SELECT el.experience.id FROM ExperienceLike el WHERE el.user.id = :userId AND el.experience.id IN :experienceIds")
+    List<Long> findExperienceIdsLikedByUserAndExperienceIds(
+            @Param("userId") Long userId,
+            @Param("experienceIds") List<Long> experienceIds
+    );
 }
