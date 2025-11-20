@@ -45,8 +45,8 @@ public record HostLikeResponseDto(
         return new HostLikeResponseDto(
                 host.getId(),
                 host.getUser().getName(),
-                host.getUser().getProfileImageUrl(),
                 host.getDescription(),
+                host.getUser().getProfileImageUrl(),
                 allImages,
                 averageRating,
                 reviewCount
