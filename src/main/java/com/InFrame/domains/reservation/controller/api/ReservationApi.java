@@ -1,6 +1,7 @@
 package com.InFrame.domains.reservation.controller.api;
 
 import com.InFrame.domains.reservation.reqdto.ReservationRequestDto;
+import com.InFrame.domains.reservation.resdto.HostReservationResponseDto;
 import com.InFrame.domains.reservation.resdto.MyReservationResponseDto;
 import com.InFrame.security.userdetails.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -181,5 +182,14 @@ public interface ReservationApi {
 
             @Parameter(description = "취소할 예약 ID", required = true)
             @PathVariable Long reservationId
+    );
+
+    @Operation(summary = "호스트 체험 예약 목록 조회", description = "호스트가 등록한 체험들에 대해 들어온 예약 목록을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = HostReservationResponseDto.class))))
+    @ApiResponse(responseCode = "403", description = "호스트 권한 없음")
+    ResponseEntity<?> getHostReservations(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     );
 }
