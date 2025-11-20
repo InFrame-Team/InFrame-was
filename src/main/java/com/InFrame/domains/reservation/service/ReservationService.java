@@ -4,15 +4,18 @@ import com.InFrame.common.exception.CustomException;
 import com.InFrame.common.exception.error.ErrorCode;
 import com.InFrame.domains.experience.entity.Experience;
 import com.InFrame.domains.experience.repository.ExperienceRepository;
+import com.InFrame.domains.host.entity.Host;
 import com.InFrame.domains.reservation.entity.Reservation;
 import com.InFrame.domains.reservation.entity.enums.ReservationStatus;
 import com.InFrame.domains.reservation.repository.ReservationRepository;
 import com.InFrame.domains.reservation.reqdto.ReservationRequestDto;
 import com.InFrame.domains.reservation.resdto.AvailableSlotDto;
+import com.InFrame.domains.reservation.resdto.HostReservationResponseDto;
 import com.InFrame.domains.reservation.resdto.MyReservationResponseDto;
 import com.InFrame.domains.reservation.resdto.ReservationResponseDto;
 import com.InFrame.domains.review.entity.Review;
 import com.InFrame.domains.review.repository.ReviewRepository;
+import com.InFrame.domains.user.entity.Role;
 import com.InFrame.domains.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -163,6 +166,24 @@ public class ReservationService {
         if ((requestDto.numAdults() + requestDto.numChildren()) > experience.getMaxCapacityPerSlot()) {
             throw new CustomException(ErrorCode.RESERVATION_CAPACITY_EXCEEDED);
         }
+    }
+
+    // 호스트가 만든 체험에 예약된 리스트 조회
+    public List<HostReservationResponseDto> getHostReservations(User user) {
+        if (user.getRole() != Role.HOST) {
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        Host host = user.getHost();
+        if (host == null) {
+            throw new CustomException(ErrorCode.HOST_NOT_FOUND);
+        }
+
+        List<Reservation> reservations = reservationRepository.findAllByHostIdWithExperience(host.getId());
+
+        return reservations.stream()
+                .map(HostReservationResponseDto::from)
+                .collect(Collectors.toList());
     }
 
 }
