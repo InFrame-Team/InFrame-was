@@ -1,3 +1,7 @@
+# 이미 장소의 시대는 끝났다. 지금은 사람의 여행, In 경산
+<img width="1513" height="853" alt="Image" src="https://github.com/user-attachments/assets/b766971e-0ec1-44c9-944a-1b5d1cd95463" />
+
+
 # 📌 컨벤션
 ### 📚 커밋 메시지
 
