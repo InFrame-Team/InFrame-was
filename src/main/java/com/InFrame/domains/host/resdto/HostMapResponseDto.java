@@ -27,6 +27,8 @@ public record HostMapResponseDto(
         Double longitude,
         @Schema(description = "기본 주소")
         String addressBase,
+        @Schema(description = "상세주소")
+        String detailAddress,
         @Schema(description = "업체 로고 이미지 URL")
         String companyLogoUrl,
         @Schema(description = "호스트가 받은 총 리뷰 수")
@@ -47,6 +49,7 @@ public record HostMapResponseDto(
                 host.getLongitude(),
                 host.getAddressBase(),
                 host.getCompanyLogoUrl(),
+                host.getAddressDetail(),
                 reviewCount,
                 lowestPrice
         );
